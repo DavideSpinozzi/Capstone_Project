@@ -1,8 +1,7 @@
-package davidespinozzi.CarGo.users;
+package davidespinozzi.CarGo.user;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -26,12 +25,20 @@ public class User implements UserDetails {
 	@GeneratedValue
 	private UUID id;
 	private String name;
+
+	
 	private String surname;
 	@Column(nullable = false, unique = true)
 	private String email;
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private Role role;
+	private String numeroPatente;
+	@OneToMany(mappedBy = "user")
+	private List<Booking> bookings;
+	@OneToMany(mappedBy = "user")
+	private List<Booking> bookingsClosed;
+
 
 	public User(String name, String surname, String email, String password) {
 		this.name = name;
@@ -39,6 +46,7 @@ public class User implements UserDetails {
 		this.email = email;
 		this.password = password;
 		this.role = Role.USER;
+		
 	}
 
 	@Override
@@ -69,5 +77,11 @@ public class User implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+	
+	public void addBooking(Booking booking) {
+		booking.setUser(this);
+		bookings.add(booking);
+		
 	}
 }

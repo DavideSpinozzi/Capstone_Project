@@ -1,12 +1,12 @@
-package davidespinozzi.CarGo.security;
+package davidespinozzi.S6Giorno1.security;
 
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import davidespinozzi.CarGo.exceptions.UnauthorizedException;
-import davidespinozzi.CarGo.user.User;
+import davidespinozzi.S6Giorno1.exceptions.UnauthorizedException;
+import davidespinozzi.S6Giorno1.users.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 

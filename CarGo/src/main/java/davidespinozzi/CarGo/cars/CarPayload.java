@@ -1,14 +1,12 @@
 package davidespinozzi.CarGo.cars;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 public class CarPayload {
-
+	private String foto;
 	private String marca;
 	private String modello;
 	private String colore;
@@ -17,5 +15,5 @@ public class CarPayload {
 	private String potenza;
 	private String tipoDiAlimentazione;
 	private String consumoAKm;
-	private Double costoOrario;
+	private Double costoGiornaliero;
 }

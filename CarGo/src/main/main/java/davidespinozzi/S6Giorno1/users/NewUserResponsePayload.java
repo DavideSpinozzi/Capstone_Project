@@ -1,4 +1,4 @@
-package davidespinozzi.CarGo.users;
+package davidespinozzi.S6Giorno1.users;
 
 import java.util.UUID;
 

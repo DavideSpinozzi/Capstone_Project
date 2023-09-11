@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import davidespinozzi.CarGo.exceptions.NotFoundException;
 
-
 @Service
 public class CarService {
 
@@ -16,9 +15,9 @@ public class CarService {
     CarRepository carRepository;
 
     public Cars save(CarPayload body) {
-        Cars newCar = new Cars(body.getMarca(), body.getModello(), body.getColore(),
+        Cars newCar = new Cars(body.getFoto(), body.getMarca(), body.getModello(), body.getColore(),
                 body.getMotore(), body.getCilindrata(), body.getPotenza(),
-                body.getTipoDiAlimentazione(), body.getConsumoAKm(), body.getCostoOrario());
+                body.getTipoDiAlimentazione(), body.getConsumoAKm(), body.getCostoGiornaliero());
         return carRepository.save(newCar);
     }
 
@@ -32,6 +31,7 @@ public class CarService {
 
     public Cars findByIdAndUpdate(UUID id, CarPayload body) throws NotFoundException {
         Cars found = this.findById(id);
+        found.setFoto(body.getFoto());
         found.setMarca(body.getMarca());
         found.setModello(body.getModello());
         found.setColore(body.getColore());
@@ -40,7 +40,7 @@ public class CarService {
         found.setPotenza(body.getPotenza());
         found.setTipoDiAlimentazione(body.getTipoDiAlimentazione());
         found.setConsumoAKm(body.getConsumoAKm());
-        found.setCostoOrario(body.getCostoOrario());
+        found.setCostoGiornaliero(body.getCostoGiornaliero());
         return carRepository.save(found);
     }
 

@@ -1,4 +1,4 @@
-package davidespinozzi.CarGo.security;
+package davidespinozzi.S6Giorno1.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 
-import davidespinozzi.CarGo.exceptions.UnauthorizedException;
-import davidespinozzi.CarGo.user.LoginSuccessfullPayload;
-import davidespinozzi.CarGo.user.NewUserPayload;
-import davidespinozzi.CarGo.user.User;
-import davidespinozzi.CarGo.user.UserLoginPayload;
-import davidespinozzi.CarGo.user.UsersService;
+import davidespinozzi.S6Giorno1.exceptions.UnauthorizedException;
+import davidespinozzi.S6Giorno1.users.LoginSuccessfullPayload;
+import davidespinozzi.S6Giorno1.users.NewUserPayload;
+import davidespinozzi.S6Giorno1.users.User;
+import davidespinozzi.S6Giorno1.users.UserLoginPayload;
+import davidespinozzi.S6Giorno1.users.UsersService;
 
 @RestController
 @RequestMapping("/auth")

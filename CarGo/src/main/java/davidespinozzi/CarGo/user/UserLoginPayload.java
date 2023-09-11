@@ -1,4 +1,4 @@
-package davidespinozzi.CarGo.users;
+package davidespinozzi.CarGo.user;
 
 import lombok.Getter;
 

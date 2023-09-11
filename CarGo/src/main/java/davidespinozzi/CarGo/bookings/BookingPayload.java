@@ -1,10 +1,8 @@
 package davidespinozzi.CarGo.bookings;
 
 import java.time.LocalDate;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import davidespinozzi.CarGo.cars.Cars;
+import lombok.*;
 
 @Getter
 @Setter
@@ -12,4 +10,5 @@ import lombok.Setter;
 public class BookingPayload {
 	private LocalDate dataInizio;
 	private LocalDate dataFine;
+	private Cars car;
 }

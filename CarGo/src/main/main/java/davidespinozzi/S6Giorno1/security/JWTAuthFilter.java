@@ -1,4 +1,4 @@
-package davidespinozzi.CarGo.security;
+package davidespinozzi.S6Giorno1.security;
 
 import java.util.UUID;
 
@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import davidespinozzi.CarGo.exceptions.UnauthorizedException;
-import davidespinozzi.CarGo.user.User;
-import davidespinozzi.CarGo.user.UsersService;
+import davidespinozzi.S6Giorno1.exceptions.UnauthorizedException;
+import davidespinozzi.S6Giorno1.users.User;
+import davidespinozzi.S6Giorno1.users.UsersService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
