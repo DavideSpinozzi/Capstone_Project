@@ -31,7 +31,30 @@ public class CarsController {
     public Cars getCarById(@PathVariable UUID id) throws NotFoundException {
         return carService.findById(id);
     }
+    
+    @GetMapping("/search/marca")
+    public List<Cars> getCarsByMarca(@RequestParam String marca) {
+        return carService.findByMarca(marca);
+    }
 
+    @GetMapping("/search/modello")
+    public List<Cars> getCarsByModello(@RequestParam String modello) {
+        return carService.findByModello(modello);
+    }
+
+    @GetMapping("/search/colore")
+    public List<Cars> getCarsByColore(@RequestParam String colore) {
+        return carService.findByColore(colore);
+    }
+
+    @GetMapping("/sorted")
+    public List<Cars> getAllCarsSorted(
+        @RequestParam(name = "sortBy", defaultValue = "marca") String sortBy,
+        @RequestParam(name = "direction", defaultValue = "asc") String direction) {
+        
+        return carService.findAllCarsSorted(sortBy, direction);
+    }
+    
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public Cars updateCar(@PathVariable UUID id, @RequestBody CarPayload carPayload) throws NotFoundException {

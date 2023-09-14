@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import davidespinozzi.CarGo.exceptions.NotFoundException;
@@ -47,5 +48,29 @@ public class CarService {
     public void findByIdAndDelete(UUID id) throws NotFoundException {
         Cars found = this.findById(id);
         carRepository.delete(found);
+    }
+    
+    public List<Cars> findByMarca(String marca) {
+        return carRepository.findByMarca(marca);
+    }
+
+    public List<Cars> findByModello(String modello) {
+        return carRepository.findByModello(modello);
+    }
+
+    public List<Cars> findByColore(String colore) {
+        return carRepository.findByColore(colore);
+    }
+    
+    public List<Cars> findAllCarsSorted(String sortBy, String direction) {
+        Sort sort = Sort.by(sortBy);
+
+        if ("desc".equalsIgnoreCase(direction)) {
+            sort = sort.descending();
+        } else {
+            sort = sort.ascending();
+        }
+
+        return carRepository.findAll(sort);
     }
 }

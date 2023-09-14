@@ -27,7 +27,6 @@ public class UsersController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public User updateUser(@PathVariable UUID id, @RequestBody NewUserPayload body) {
         return usersService.findByIdAndUpdate(id, body);
     }

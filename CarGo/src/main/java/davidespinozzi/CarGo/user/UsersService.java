@@ -55,4 +55,14 @@ public class UsersService {
 		return userRepository.findByEmail(email)
 				.orElseThrow(() -> new NotFoundException("Utente con email " + email + " non trovato"));
 	}
+	
+	public void changeRole(UUID id) throws NotFoundException {
+		User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
+		if(user.getRole() == Role.USER) {
+		user.setRole(Role.ADMIN);
+		} else {
+			user.setRole(Role.USER);
+		}
+		userRepository.save(user);
+	}
 }
