@@ -1,5 +1,6 @@
 package davidespinozzi.CarGo.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import davidespinozzi.CarGo.bookings.Booking;
 import jakarta.persistence.*;
@@ -25,20 +27,15 @@ public class User implements UserDetails {
 	@GeneratedValue
 	private UUID id;
 	private String name;
-
-	
 	private String surname;
 	@Column(nullable = false, unique = true)
 	private String email;
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private Role role;
-	private String numeroPatente;
-	@OneToMany(mappedBy = "user")
-	private List<Booking> bookings;
-	@OneToMany(mappedBy = "user")
-	private List<Booking> bookingsClosed;
-
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<Booking> bookings = new ArrayList<>();
 
 	public User(String name, String surname, String email, String password) {
 		this.name = name;

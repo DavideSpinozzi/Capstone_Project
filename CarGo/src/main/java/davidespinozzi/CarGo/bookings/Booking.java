@@ -2,6 +2,9 @@ package davidespinozzi.CarGo.bookings;
 
 import java.time.LocalDate;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import davidespinozzi.CarGo.cars.Cars;
 import davidespinozzi.CarGo.user.User;
 import jakarta.persistence.Entity;
@@ -26,9 +29,11 @@ public class Booking {
     private LocalDate dataFine;
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
      private User user;
     @ManyToOne
     @JoinColumn(name = "car_id")
+    @JsonBackReference
      private Cars car;
 
     public Booking(LocalDate dataInizio, LocalDate dataFine) {
@@ -36,4 +41,9 @@ public class Booking {
         this.dataFine = dataFine;
     }
     
+    @Override
+	public String toString() {
+		return "data d'inizio = " + dataInizio + " data fine= " + dataFine;
+	}
+
 }

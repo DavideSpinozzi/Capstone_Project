@@ -1,7 +1,8 @@
 package davidespinozzi.CarGo.bookings;
 
 import java.time.LocalDate;
-import davidespinozzi.CarGo.cars.Cars;
+import java.util.UUID;
+
 import lombok.*;
 
 @Getter
@@ -10,5 +11,5 @@ import lombok.*;
 public class BookingPayload {
 	private LocalDate dataInizio;
 	private LocalDate dataFine;
-	private Cars car;
+	private UUID carId;
 }

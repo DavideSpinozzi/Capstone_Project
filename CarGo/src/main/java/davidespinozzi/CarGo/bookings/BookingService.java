@@ -14,8 +14,7 @@ public class BookingService {
     @Autowired
     BookingRepository bookingRepository;
 
-    public Booking save(BookingPayload body) {
-        Booking newBooking = new Booking(body.getDataInizio(), body.getDataFine());
+    public Booking save(Booking newBooking) {
         return bookingRepository.save(newBooking);
     }
 

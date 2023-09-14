@@ -27,22 +27,25 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, java.io.IOException {
-		String authHeader = request.getHeader("Authorization");
-		if (authHeader == null || !authHeader.startsWith("Bearer "))
-			throw new UnauthorizedException("Per favore passa il token nell'authorization header");
-		String token = authHeader.substring(7);
-		System.out.println("TOKEN = " + token);
-		jwttools.verifyToken(token);
-		String id = jwttools.extractSubject(token);
-		User currentUser = userService.findById(UUID.fromString(id));
+	        throws ServletException, java.io.IOException {
+	    String authHeader = request.getHeader("Authorization");
+	    
+	    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+	    	throw new UnauthorizedException("Per favore passa il token nell'authorization header");
+	    }
+	    
+	    String token = authHeader.substring(7);
+	    System.out.println("TOKEN = " + token);
+	    jwttools.verifyToken(token);
+	    String id = jwttools.extractSubject(token);
+	    User currentUser = userService.findById(UUID.fromString(id));
 
-		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(currentUser, null,
-				currentUser.getAuthorities());
-		SecurityContextHolder.getContext().setAuthentication(authToken);
-		filterChain.doFilter(request, response);
-
+	    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(currentUser, null,
+	            currentUser.getAuthorities());
+	    SecurityContextHolder.getContext().setAuthentication(authToken);
+	    filterChain.doFilter(request, response);
 	}
+
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {

@@ -1,12 +1,15 @@
 package davidespinozzi.CarGo.cars;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import davidespinozzi.CarGo.bookings.Booking;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -32,8 +35,9 @@ public class Cars {
 	private String tipoDiAlimentazione;
 	private String consumoAKm;
 	private Double costoGiornaliero;
-	@OneToMany(mappedBy = "car")
-	private List<Booking> book;
+	@OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<Booking> bookings = new ArrayList<>();
 
 	public Cars(String foto, String marca, String modello, String colore, String motore, String cilindrata,
 			String potenza, String tipoDiAlimentazione, String consumoAKm, Double costoGiornaliero) {
