@@ -30,6 +30,14 @@ public class UsersController {
     public User getUserById(@PathVariable UUID id) {
         return usersService.findById(id);
     }
+    
+    @GetMapping("/current")
+    @PreAuthorize("isAuthenticated()")
+    public User getCurrentUser() {
+        UUID currentUserId = getCurrentUserId();
+        return usersService.findById(currentUserId);
+    }
+
 
     @PutMapping("/{id}")
     public User updateUser(@PathVariable UUID id, @RequestBody NewUserPayload body) {

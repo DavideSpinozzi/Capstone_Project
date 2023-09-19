@@ -44,6 +44,7 @@ public class BookingController {
             if (car == null) {
                 throw new NotFoundException("Auto non trovata.");
             }
+            
             LocalDate dataInizio = bookingPayload.getDataInizio();
             LocalDate dataFine = bookingPayload.getDataFine();
 
@@ -52,17 +53,22 @@ public class BookingController {
             }
 
             List<Booking> overlappingBookings = car.getBookings().stream()
+                    .filter(booking -> booking.getStato() == Stato.CHIUSO)
                     .filter(booking -> isDateOverlap(booking.getDataInizio(), booking.getDataFine(), dataInizio, dataFine))
                     .collect(Collectors.toList());
 
             if (!overlappingBookings.isEmpty()) {
                 throw new NotAvailableException("Date prenotate non disponibili per questa auto.");
             }
+            
             Booking newBooking = new Booking(bookingPayload.getDataInizio(), bookingPayload.getDataFine());
             newBooking.setCar(car);
             newBooking.setUser(currentUser);
             newBooking.setStato(Stato.APERTO);
             currentUser.getBookings().add(newBooking);
+            
+            car.getBookings().add(newBooking);
+
             newBooking = bookingService.save(newBooking);
 
             return new ResponseEntity<>(newBooking, HttpStatus.CREATED);
@@ -70,6 +76,7 @@ public class BookingController {
             throw e;
         }
     }
+
     
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ADMIN')")
