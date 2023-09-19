@@ -9,7 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class NewUserPayload {
 
-	private String username;
 	private String name;
 	private String surname;
 	private String email;
