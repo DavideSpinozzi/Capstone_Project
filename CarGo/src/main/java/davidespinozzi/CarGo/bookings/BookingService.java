@@ -37,4 +37,10 @@ public class BookingService {
         Booking found = this.findById(id);
         bookingRepository.delete(found);
     }
+    
+    public Booking changeBookingState(UUID id, Stato newState) throws NotFoundException {
+        Booking found = this.findById(id);
+        found.setStato(newState);
+        return bookingRepository.save(found);
+    }
 }

@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import davidespinozzi.CarGo.cars.Cars;
 import davidespinozzi.CarGo.user.User;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -27,6 +29,8 @@ public class Booking {
     private UUID id;
     private LocalDate dataInizio;
     private LocalDate dataFine;
+    @Enumerated(EnumType.STRING)
+    private Stato stato;
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference

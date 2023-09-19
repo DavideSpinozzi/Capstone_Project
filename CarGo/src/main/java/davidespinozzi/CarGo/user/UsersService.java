@@ -2,11 +2,14 @@ package davidespinozzi.CarGo.user;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import davidespinozzi.CarGo.bookings.Booking;
+import davidespinozzi.CarGo.bookings.Stato;
 import davidespinozzi.CarGo.exceptions.BadRequestException;
 import davidespinozzi.CarGo.exceptions.NotFoundException;
 
@@ -65,4 +68,11 @@ public class UsersService {
 		}
 		userRepository.save(user);
 	}
+	
+	 public List<Booking> findUserBookingsByState(UUID userId, Stato state) {
+	        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
+	        return user.getBookings().stream()
+	                   .filter(booking -> booking.getStato() == state)
+	                   .collect(Collectors.toList());
+	    }
 }

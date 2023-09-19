@@ -2,7 +2,12 @@ package davidespinozzi.CarGo.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import davidespinozzi.CarGo.bookings.Booking;
+import davidespinozzi.CarGo.bookings.Stato;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,6 +45,24 @@ public class UsersController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public User getUserByEmail(@PathVariable String email) {
         return usersService.findByEmail(email);
+    }
+    
+    @GetMapping("/bookings/open")
+    public List<Booking> getUserOpenBookings() {
+        UUID currentUserId = getCurrentUserId();
+        return usersService.findUserBookingsByState(currentUserId, Stato.APERTO);
+    }
+
+    @GetMapping("/bookings/closed")
+    public List<Booking> getUserClosedBookings() {
+        UUID currentUserId = getCurrentUserId();
+        return usersService.findUserBookingsByState(currentUserId, Stato.CHIUSO);
+    }
+    
+    private UUID getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
+        return currentUser.getId();
     }
 }
 

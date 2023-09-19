@@ -61,6 +61,7 @@ public class BookingController {
             Booking newBooking = new Booking(bookingPayload.getDataInizio(), bookingPayload.getDataFine());
             newBooking.setCar(car);
             newBooking.setUser(currentUser);
+            newBooking.setStato(Stato.APERTO);
             currentUser.getBookings().add(newBooking);
             newBooking = bookingService.save(newBooking);
 
@@ -92,6 +93,12 @@ public class BookingController {
         bookingService.findByIdAndDelete(id);
     }
     
+    @PutMapping("/{id}/close")
+    public ResponseEntity<Booking> closeBooking(@PathVariable UUID id) throws NotFoundException {
+        Booking updatedBooking = bookingService.changeBookingState(id, Stato.CHIUSO);
+        return new ResponseEntity<>(updatedBooking, HttpStatus.OK);
+    }
+
     private boolean isDateOverlap(LocalDate startDate1, LocalDate endDate1, LocalDate startDate2, LocalDate endDate2) {
         if (startDate1 == null || endDate1 == null || startDate2 == null || endDate2 == null) {
             throw new IllegalArgumentException("Le date non possono essere nulle");
@@ -102,4 +109,5 @@ public class BookingController {
                (startDate2.isEqual(startDate1) || startDate2.isAfter(startDate1)) && startDate2.isBefore(endDate1) ||
                (endDate2.isEqual(endDate1) || endDate2.isBefore(endDate1)) && endDate2.isAfter(startDate1);
     }
+    
 }
