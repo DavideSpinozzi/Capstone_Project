@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import davidespinozzi.CarGo.exceptions.UnauthorizedException;
 import davidespinozzi.CarGo.user.LoginSuccessfullPayload;
@@ -49,5 +50,12 @@ public class AuthController {
 		} else {
 			throw new UnauthorizedException("Credenziali non valide");
 		}
+	}
+	
+	@PostMapping("/logout")
+	public ResponseEntity<String> logout() {
+		System.out.println("Logout effettuato con successo");
+		return ResponseEntity.ok("Logout effettuato con successo");
+
 	}
 }
