@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { NewUserPayload } from '../interface/new-user-payload';
 
 @Injectable({
   providedIn: 'root'
@@ -24,14 +25,8 @@ export class AuthService {
       }));
   }
 
-  register(
-    username: string,
-    name: string,
-    surname: string,
-    email: string,
-    password: string
-    ): Observable<any> {
-      const newUser = { username, name, surname, email, password };
+  register(name: string, surname: string, email: string, password: string): Observable<any> {
+    const newUser: NewUserPayload = { name, surname, email, password };
     return this.http.post<any>('http://localhost:4000/auth/register', newUser);
   }
 

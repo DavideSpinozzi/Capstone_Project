@@ -35,14 +35,14 @@ public class UsersController {
     @GetMapping("/current")
     @PreAuthorize("isAuthenticated()")
     public User getCurrentUser() {
-        UUID currentUserId = getCurrentUserId();
+        UUID currentUserId = usersService.getCurrentUserId();
         return usersService.findById(currentUserId);
     }
 
     @PutMapping("/current")
     @PreAuthorize("isAuthenticated()")
     public User updateCurrentUser(@RequestBody NewUserPayload body) {
-    	UUID currentUserId = getCurrentUserId();
+        UUID currentUserId = usersService.getCurrentUserId();
         return usersService.findByIdAndUpdate(currentUserId, body);
     }
     
@@ -67,21 +67,15 @@ public class UsersController {
     @GetMapping("/bookings/open")
     @PreAuthorize("isAuthenticated()")
     public List<Booking> getUserOpenBookings() {
-        UUID currentUserId = getCurrentUserId();
+        UUID currentUserId = usersService.getCurrentUserId();
         return usersService.findUserBookingsByState(currentUserId, Stato.APERTO);
     }
 
     @GetMapping("/bookings/closed")
     @PreAuthorize("isAuthenticated()")
     public List<Booking> getUserClosedBookings() {
-        UUID currentUserId = getCurrentUserId();
+        UUID currentUserId = usersService.getCurrentUserId();
         return usersService.findUserBookingsByState(currentUserId, Stato.CHIUSO);
-    }
-    
-    private UUID getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
-        return currentUser.getId();
     }
 }
 

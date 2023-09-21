@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { NewUserPayload } from '../interface/new-user-payload';
 
 @Injectable({
   providedIn: 'root'
@@ -22,11 +23,11 @@ export class UserService {
     return this.http.get(`${this.baseUrl}/current`);
   }
 
-  updateCurrentUser(payload: any): Observable<any> {
+  updateCurrentUser(payload: NewUserPayload): Observable<any> {
     return this.http.put(`${this.baseUrl}/current`, payload);
   }
 
-  updateUser(id: string, payload: any): Observable<any> {
+  updateUser(id: string, payload: NewUserPayload): Observable<any> {
     return this.http.put(`${this.baseUrl}/${id}`, payload);
   }
 

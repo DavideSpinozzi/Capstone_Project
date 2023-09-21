@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { CarPayload } from '../interface/car-payload';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class CarService {
 
   constructor(private http: HttpClient) { }
 
-  createCar(payload: any): Observable<any> {
+  createCar(payload: CarPayload): Observable<any> {
     return this.http.post(`${this.baseUrl}/create`, payload);
   }
 
@@ -38,7 +39,7 @@ export class CarService {
     return this.http.get(`${this.baseUrl}/sorted?sortBy=${sortBy}&direction=${direction}`);
   }
 
-  updateCar(id: string, payload: any): Observable<any> {
+  updateCar(id: string, payload: CarPayload): Observable<any> {
     return this.http.put(`${this.baseUrl}/${id}`, payload);
   }
 

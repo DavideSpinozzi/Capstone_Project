@@ -15,62 +15,57 @@ public class CarService {
     @Autowired
     CarRepository carRepository;
 
-    public Cars save(CarPayload body) {
+    public Cars createCar(CarPayload body) {
         Cars newCar = new Cars(body.getFoto(), body.getMarca(), body.getModello(), body.getColore(),
                 body.getMotore(), body.getCilindrata(), body.getPotenza(),
                 body.getTipoDiAlimentazione(), body.getConsumoAKm(), body.getCostoGiornaliero());
         return carRepository.save(newCar);
     }
 
-    public List<Cars> getCars() {
+    public List<Cars> getAllCars() {
         return carRepository.findAll();
     }
 
-    public Cars findById(UUID id) throws NotFoundException {
+    public Cars getCarById(UUID id) throws NotFoundException {
         return carRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
 
-    public Cars findByIdAndUpdate(UUID id, CarPayload body) throws NotFoundException {
-        Cars found = this.findById(id);
-        found.setFoto(body.getFoto());
-        found.setMarca(body.getMarca());
-        found.setModello(body.getModello());
-        found.setColore(body.getColore());
-        found.setMotore(body.getMotore());
-        found.setCilindrata(body.getCilindrata());
-        found.setPotenza(body.getPotenza());
-        found.setTipoDiAlimentazione(body.getTipoDiAlimentazione());
-        found.setConsumoAKm(body.getConsumoAKm());
-        found.setCostoGiornaliero(body.getCostoGiornaliero());
-        return carRepository.save(found);
-    }
-
-    public void findByIdAndDelete(UUID id) throws NotFoundException {
-        Cars found = this.findById(id);
-        carRepository.delete(found);
-    }
-    
-    public List<Cars> findByMarca(String marca) {
+    public List<Cars> getCarsByMarca(String marca) {
         return carRepository.findByMarca(marca);
     }
 
-    public List<Cars> findByModello(String modello) {
+    public List<Cars> getCarsByModello(String modello) {
         return carRepository.findByModello(modello);
     }
 
-    public List<Cars> findByColore(String colore) {
+    public List<Cars> getCarsByColore(String colore) {
         return carRepository.findByColore(colore);
     }
-    
-    public List<Cars> findAllCarsSorted(String sortBy, String direction) {
+
+    public List<Cars> getAllCarsSorted(String sortBy, String direction) {
         Sort sort = Sort.by(sortBy);
-
-        if ("desc".equalsIgnoreCase(direction)) {
-            sort = sort.descending();
-        } else {
-            sort = sort.ascending();
-        }
-
+        if ("desc".equalsIgnoreCase(direction)) sort = sort.descending();
+        else sort = sort.ascending();
         return carRepository.findAll(sort);
+    }
+
+    public Cars updateCar(UUID id, CarPayload body) throws NotFoundException {
+        Cars carToUpdate = getCarById(id);
+        carToUpdate.setFoto(body.getFoto());
+        carToUpdate.setMarca(body.getMarca());
+        carToUpdate.setModello(body.getModello());
+        carToUpdate.setColore(body.getColore());
+        carToUpdate.setMotore(body.getMotore());
+        carToUpdate.setCilindrata(body.getCilindrata());
+        carToUpdate.setPotenza(body.getPotenza());
+        carToUpdate.setTipoDiAlimentazione(body.getTipoDiAlimentazione());
+        carToUpdate.setConsumoAKm(body.getConsumoAKm());
+        carToUpdate.setCostoGiornaliero(body.getCostoGiornaliero());
+        return carRepository.save(carToUpdate);
+    }
+
+    public void deleteCarById(UUID id) throws NotFoundException {
+        Cars carToDelete = getCarById(id);
+        carRepository.delete(carToDelete);
     }
 }

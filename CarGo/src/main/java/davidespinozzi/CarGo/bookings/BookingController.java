@@ -15,6 +15,7 @@ import davidespinozzi.CarGo.exceptions.NotFoundException;
 import davidespinozzi.CarGo.user.User;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,59 +26,12 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
-    
-    @Autowired
-    private CarService carService;
 
     @PostMapping("/create")
-    public ResponseEntity<Booking> createBooking(@RequestBody BookingPayload bookingPayload) {
-        try {
-      
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User currentUser = (User) authentication.getPrincipal();
-            System.out.println(currentUser);
-
-            UUID carId = bookingPayload.getCarId();
-
-            Cars car = carService.findById(carId);
-
-            if (car == null) {
-                throw new NotFoundException("Auto non trovata.");
-            }
-            
-            LocalDate dataInizio = bookingPayload.getDataInizio();
-            LocalDate dataFine = bookingPayload.getDataFine();
-
-            if (dataInizio == null || dataFine == null) {
-                throw new IllegalArgumentException("Le date non possono essere nulle");
-            }
-
-            List<Booking> overlappingBookings = car.getBookings().stream()
-                    .filter(booking -> booking.getStato() == Stato.CHIUSO)
-                    .filter(booking -> isDateOverlap(booking.getDataInizio(), booking.getDataFine(), dataInizio, dataFine))
-                    .collect(Collectors.toList());
-
-            if (!overlappingBookings.isEmpty()) {
-                throw new NotAvailableException("Date prenotate non disponibili per questa auto.");
-            }
-            
-            Booking newBooking = new Booking(bookingPayload.getDataInizio(), bookingPayload.getDataFine());
-            newBooking.setCar(car);
-            newBooking.setUser(currentUser);
-            newBooking.setStato(Stato.APERTO);
-            currentUser.getBookings().add(newBooking);
-            
-            car.getBookings().add(newBooking);
-
-            newBooking = bookingService.save(newBooking);
-
-            return new ResponseEntity<>(newBooking, HttpStatus.CREATED);
-        } catch (NotAvailableException | NotFoundException e) {
-            throw e;
-        }
+    public ResponseEntity<Booking> createBooking(@RequestBody BookingPayload bookingPayload) throws NotFoundException, NotAvailableException {
+        return new ResponseEntity<>(bookingService.createBooking(bookingPayload), HttpStatus.CREATED);
     }
 
-    
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<Booking> getAllBookings() {
@@ -91,30 +45,18 @@ public class BookingController {
     }
 
     @PutMapping("/{id}")
-    public Booking updateBooking(@PathVariable UUID id, @RequestBody BookingPayload bookingPayload) throws NotFoundException {
-        return bookingService.findByIdAndUpdate(id, bookingPayload);
+    public ResponseEntity<Booking> updateBooking(@PathVariable UUID id, @RequestBody BookingPayload bookingPayload) throws NotFoundException, NotAvailableException {
+        return new ResponseEntity<>(bookingService.updateBooking(id, bookingPayload), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public void deleteBooking(@PathVariable UUID id) throws NotFoundException {
         bookingService.findByIdAndDelete(id);
     }
-    
+
     @PutMapping("/{id}/close")
     public ResponseEntity<Booking> closeBooking(@PathVariable UUID id) throws NotFoundException {
-        Booking updatedBooking = bookingService.changeBookingState(id, Stato.CHIUSO);
-        return new ResponseEntity<>(updatedBooking, HttpStatus.OK);
+        return new ResponseEntity<>(bookingService.changeBookingState(id, Stato.CHIUSO), HttpStatus.OK);
     }
-
-    private boolean isDateOverlap(LocalDate startDate1, LocalDate endDate1, LocalDate startDate2, LocalDate endDate2) {
-        if (startDate1 == null || endDate1 == null || startDate2 == null || endDate2 == null) {
-            throw new IllegalArgumentException("Le date non possono essere nulle");
-        }
-
-        return (startDate1.isEqual(startDate2) || startDate1.isAfter(startDate2)) && startDate1.isBefore(endDate2) ||
-               (endDate1.isEqual(endDate2) || endDate1.isBefore(endDate2)) && endDate1.isAfter(startDate2) ||
-               (startDate2.isEqual(startDate1) || startDate2.isAfter(startDate1)) && startDate2.isBefore(endDate1) ||
-               (endDate2.isEqual(endDate1) || endDate2.isBefore(endDate1)) && endDate2.isAfter(startDate1);
-    }
-    
 }
+

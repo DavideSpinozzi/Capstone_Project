@@ -19,51 +19,51 @@ public class CarsController {
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ADMIN')")
     public Cars createCar(@RequestBody CarPayload carPayload) {
-        return carService.save(carPayload);
+        return carService.createCar(carPayload);
     }
 
     @GetMapping("/all")
     public List<Cars> getAllCars() {
-        return carService.getCars();
+        return carService.getAllCars();
     }
 
     @GetMapping("/{id}")
     public Cars getCarById(@PathVariable UUID id) throws NotFoundException {
-        return carService.findById(id);
+        return carService.getCarById(id);
     }
-    
+
     @GetMapping("/search/marca")
     public List<Cars> getCarsByMarca(@RequestParam String marca) {
-        return carService.findByMarca(marca);
+        return carService.getCarsByMarca(marca);
     }
 
     @GetMapping("/search/modello")
     public List<Cars> getCarsByModello(@RequestParam String modello) {
-        return carService.findByModello(modello);
+        return carService.getCarsByModello(modello);
     }
 
     @GetMapping("/search/colore")
     public List<Cars> getCarsByColore(@RequestParam String colore) {
-        return carService.findByColore(colore);
+        return carService.getCarsByColore(colore);
     }
 
     @GetMapping("/sorted")
     public List<Cars> getAllCarsSorted(
-        @RequestParam(name = "sortBy", defaultValue = "marca") String sortBy,
-        @RequestParam(name = "direction", defaultValue = "asc") String direction) {
-        
-        return carService.findAllCarsSorted(sortBy, direction);
+            @RequestParam(name = "sortBy", defaultValue = "marca") String sortBy,
+            @RequestParam(name = "direction", defaultValue = "asc") String direction) {
+        return carService.getAllCarsSorted(sortBy, direction);
     }
-    
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public Cars updateCar(@PathVariable UUID id, @RequestBody CarPayload carPayload) throws NotFoundException {
-        return carService.findByIdAndUpdate(id, carPayload);
+        return carService.updateCar(id, carPayload);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteCar(@PathVariable UUID id) throws NotFoundException {
-        carService.findByIdAndDelete(id);
+        carService.deleteCarById(id);
     }
 }
+

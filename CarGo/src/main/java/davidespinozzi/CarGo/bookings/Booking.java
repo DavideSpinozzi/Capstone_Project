@@ -29,6 +29,7 @@ public class Booking {
     private UUID id;
     private LocalDate dataInizio;
     private LocalDate dataFine;
+    private Double costoTotale;
     @Enumerated(EnumType.STRING)
     private Stato stato;
     @ManyToOne
