@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { NewUserPayload } from '../interface/new-user-payload';
 
 @Injectable({
@@ -8,35 +10,58 @@ import { NewUserPayload } from '../interface/new-user-payload';
 })
 export class AuthService {
 
-  currentUser: any = null;
+  private currentUserSubject: BehaviorSubject<any> = new BehaviorSubject(null);
+  currentUser$: Observable<any> = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
-
-  login(email: string, password: string): Observable<any> {
-    const credentials = { email, password };
-    return this.http.post<any>('http://localhost:4000/auth/login', credentials)
-      .pipe(map(response => {
-        console.log('Server Response:', response);
-        if (response.accessToken) {
-          console.log('Token:', response.accessToken);
-          localStorage.setItem('token', response.accessToken);
-        }
-        return response;
-      }));
+  constructor(private http: HttpClient, private router: Router) {
+    this.checkTokenAtStartup();
   }
 
-  register(name: string, surname: string, email: string, password: string): Observable<any> {
-    const newUser: NewUserPayload = { name, surname, email, password };
+  login(email: string, password: string): Observable<any> {
+    return this.http.post<any>('http://localhost:4000/auth/login', { email, password })
+      .pipe(
+        tap(response => {
+          if (response && response.accessToken) {
+            localStorage.setItem('token', response.accessToken);
+            this.getCurrentUser();
+          }
+        }),
+        catchError(err => {
+          console.error('Login Error:', err);
+          return of(null);
+        })
+      );
+  }
+
+  register(newUser: NewUserPayload): Observable<any> {
     return this.http.post<any>('http://localhost:4000/auth/register', newUser);
   }
 
-  getCurrentUserInfo(): Observable<any> {
-    return this.http.get<any>('http://localhost:4000/users/current');
+  getCurrentUser(): void {
+    if (!this.isLoggedIn()) {
+      this.currentUserSubject.next(null);
+      return;
+    }
+
+    this.http.get<any>('http://localhost:4000/users/current')
+      .pipe(
+        tap(user => this.currentUserSubject.next(user)),
+        catchError(err => of(null))
+      )
+      .subscribe();
   }
 
-  logout() {
+  logout(): Observable<any> {
     localStorage.removeItem('token');
-    return this.http.post<any>('http://localhost:4000/auth/logout', null);
+    this.router.navigate(['']);
+    return this.http.post<any>('http://localhost:4000/auth/logout', null, { responseType: 'text' as 'json' })
+      .pipe(
+        tap(() => this.currentUserSubject.next(null)),
+        catchError(err => {
+          console.error('Logout Error:', err);
+          return of(null);
+        })
+      );
   }
 
   isLoggedIn(): boolean {
@@ -47,4 +72,8 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
+  private checkTokenAtStartup(): void {
+    const token = this.getToken();
+    if (token) this.getCurrentUser();
+  }
 }

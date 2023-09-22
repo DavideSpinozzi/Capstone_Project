@@ -21,8 +21,8 @@ public class CarGoApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-    	UUID id = UUID.fromString("d3e96431-f1a2-4c25-b9a6-fe7d29db5a6d");
-        userService.changeRole(id);
+    	//UUID id = UUID.fromString("9f366823-428e-422e-a3d9-4a9c720b343b");
+        //userService.changeRole(id);
     }
 }
 

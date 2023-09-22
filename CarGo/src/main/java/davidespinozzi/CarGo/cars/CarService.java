@@ -31,16 +31,17 @@ public class CarService {
     }
 
     public List<Cars> getCarsByMarca(String marca) {
-        return carRepository.findByMarca(marca);
+        return carRepository.findByMarcaIgnoreCase(marca);
     }
 
     public List<Cars> getCarsByModello(String modello) {
-        return carRepository.findByModello(modello);
+        return carRepository.findByModelloIgnoreCase(modello);
     }
 
     public List<Cars> getCarsByColore(String colore) {
-        return carRepository.findByColore(colore);
+        return carRepository.findByColoreIgnoreCase(colore);
     }
+
 
     public List<Cars> getAllCarsSorted(String sortBy, String direction) {
         Sort sort = Sort.by(sortBy);

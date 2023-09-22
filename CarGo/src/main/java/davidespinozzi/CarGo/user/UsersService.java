@@ -74,6 +74,15 @@ public class UsersService {
 		return user.getBookings().stream().filter(booking -> booking.getStato() == state).collect(Collectors.toList());
 	}
 
+	public List<Booking> findCurrentUserBookingsByState(Stato state) {
+	    UUID userId = getCurrentUserId();
+	    User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(userId));
+	    return user.getBookings().stream()
+	               .filter(booking -> booking.getStato() == state)
+	               .collect(Collectors.toList());
+	}
+
+	
 	public UUID getCurrentUserId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User currentUser = (User) authentication.getPrincipal();

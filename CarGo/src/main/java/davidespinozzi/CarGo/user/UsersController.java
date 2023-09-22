@@ -77,5 +77,15 @@ public class UsersController {
         UUID currentUserId = usersService.getCurrentUserId();
         return usersService.findUserBookingsByState(currentUserId, Stato.CHIUSO);
     }
+    
+    @GetMapping("/current/bookings/open")
+    public List<Booking> getOpenBookings() {
+        return usersService.findCurrentUserBookingsByState(Stato.APERTO);
+    }
+
+    @GetMapping("/current/bookings/closed")
+    public List<Booking> getClosedBookings() {
+        return usersService.findCurrentUserBookingsByState(Stato.CHIUSO);
+    }
 }
 

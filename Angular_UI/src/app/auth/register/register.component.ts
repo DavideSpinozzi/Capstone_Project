@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import { NewUserPayload } from 'src/app/interface/new-user-payload';
 
 @Component({
   selector: 'app-register',
@@ -52,7 +53,13 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.authService.register(this.name, this.surname, this.email, this.password).subscribe(
+    const newUser: NewUserPayload = {
+      name: this.name,
+      surname: this.surname,
+      email: this.email,
+      password: this.password
+    };
+    this.authService.register(newUser).subscribe(
       response => {
         alert("Registrato con successo!");
         this.router.navigate(['/login']);
@@ -62,5 +69,6 @@ export class RegisterComponent implements OnInit {
       }
     );
   }
+
 }
 

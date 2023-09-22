@@ -22,7 +22,7 @@ public class CarsController {
         return carService.createCar(carPayload);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<Cars> getAllCars() {
         return carService.getAllCars();
     }

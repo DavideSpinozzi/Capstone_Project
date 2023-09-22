@@ -20,19 +20,24 @@ public class SecurityConfig {
 	@Autowired
 	JWTAuthFilter jwtFilter;
 	
+	@Autowired
+	CorsFilter corsFilter;
+	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		//http.cors(c -> c.disable());
+		http.cors(c -> c.disable());
 		http.csrf(c -> c.disable());
 
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(corsFilter, JWTAuthFilter.class);
 		
 		http.authorizeHttpRequests(auth -> {
 		    auth.requestMatchers("/auth/**").permitAll(); 
 		    auth.requestMatchers("/users/**").authenticated();
+		    auth.requestMatchers("/cars").permitAll();
 		    auth.requestMatchers("/cars/**").authenticated();
 		    auth.requestMatchers("/bookings/**").authenticated();
 		});

@@ -46,4 +46,12 @@ export class UserService {
   getUserClosedBookings(): Observable<any> {
     return this.http.get(`${this.baseUrl}/bookings/closed`);
   }
+
+  getOpenBookingsForCurrentUser(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/current/bookings/open`);
+  }
+
+  getClosedBookingsForCurrentUser(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/current/bookings/closed`);
+  }
 }
