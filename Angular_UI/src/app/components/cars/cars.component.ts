@@ -4,6 +4,8 @@ import { Car } from 'src/app/interface/car';
 import { UserService } from 'src/app/service/user.service';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
+import { BookingService } from 'src/app/service/booking.service';
+import { BookingPayload } from 'src/app/interface/booking-payload';
 
 @Component({
   selector: 'app-cars',
@@ -92,17 +94,41 @@ import { AuthService } from 'src/app/auth/auth.service';
         </div>
       </div>
       <div class="row mt-3 px-3">
-        <div class="col-md-4" *ngFor="let car of cars">
+        <div class="col-md-4" *ngFor="let car of cars; let i = index">
           <div class="pb-3 h-100">
           <div class="card h-100">
-            <img [src]="car.foto" class="card-img-top cars-img" alt="..." />
+            <img *ngIf="!mostraForm[i]" [src]="car.foto" class="card-img-top cars-img" alt="..." />
+            <div *ngIf="mostraForm[i]">
+  <div class="form-group mx-1 mx-md-4 my-3">
+    <label class="text-primary" for="dataInizio">Data di Inizio</label>
+    <input
+      type="date"
+      class="form-control"
+      [(ngModel)]="dataInizio"
+      id="dataInizio"
+    />
+  </div>
+  <div class="form-group mx-1 mx-md-4 mb-3">
+    <label class="text-primary" for="dataFine">Data di Fine</label>
+    <input
+      type="date"
+      class="form-control"
+      [(ngModel)]="dataFine"
+      id="dataFine"
+    />
+  </div>
+  <div class="form-group mx-1 mx-md-4">
+    <button class="btn btn-danger me-3" (click)="annulla(i)">Annulla</button>
+    <button class="btn btn-success" (click)="conferma(i)">Conferma</button>
+  </div>
+</div>
             <div class="card-body row">
               <div class="col-9">
               <h5 class="card-title">{{ car.marca }} {{ car.modello }}</h5>
               <p class="card-text">€ {{ car.costoGiornaliero }}/giorno</p>
             </div>
-            <div *ngIf="user" class="col-3 d-flex justify-content-center align-items-center">
-            <button type="button" class="btn btn-primary fs-4">Prenota</button>
+            <div *ngIf="user && !formAperto" class="col-3 d-flex justify-content-center align-items-center">
+            <button class="btn btn-primary" (click)="mostraFormPrenotazione(i)">Prenota</button>
             </div>
             </div>
           </div>
@@ -113,19 +139,43 @@ import { AuthService } from 'src/app/auth/auth.service';
     <div class="col-0 col-md-2 border carrello" *ngIf="user">
 <div class="border row px-0 py-2"><div class="col-8 d-flex justify-content-center align-items-center px-0"><h2 class="text-center py-1">Carrello</h2></div><div class="col-4 d-flex justify-content-center align-items-center px-0"><button type="button" class="btn btn-success fs-5">Acquista</button></div></div>
  <div class="d-flex flex-column align-items-center">
- <div class="card my-2" *ngFor="let booking of bookings" style="width: 18rem;">
+ <div class="card my-2" *ngFor="let booking of bookings; let i = index" style="width: 18rem;">
           <div class="card-header">
 Nome modello: {{booking.nomeModello}}
           </div>
-          <ul class="list-group list-group-flush">
+          <!--ul che scompare quando premo modifica--><ul *ngIf="!modificaForm[i]" class="list-group list-group-flush">
             <li class="list-group-item">Inizio: {{booking.dataInizio}}</li>
             <li class="list-group-item">Fine: {{booking.dataFine}}</li>
             <li class="list-group-item">Costo totale: {{booking.costoTotale}}€</li>
             <li class="list-group-item d-flex justify-content-between">
-              <a class="text-warning" (click)="modifyBooking(booking)">Modifica</a>
-              <a class="text-danger" (click)="deleteBooking(booking)">Cancella</a>
+              <a *ngIf="!formAperto" class="text-warning" (click)="modifyBooking(i)">Modifica</a>
+              <a *ngIf="!formAperto" class="text-danger" (click)="deleteBooking()">Cancella</a>
             </li>
           </ul>
+          <!--div che compare quando premo modifica--><div *ngIf="modificaForm[i]">
+  <div class="form-group mx-1 mx-md-4 my-3">
+    <label class="text-primary" for="dataInizio">Data di Inizio</label>
+    <input
+      type="date"
+      class="form-control"
+      [(ngModel)]="dataInizio"
+      id="dataInizio"
+    />
+  </div>
+  <div class="form-group mx-1 mx-md-4 mb-3">
+    <label class="text-primary" for="dataFine">Data di Fine</label>
+    <input
+      type="date"
+      class="form-control"
+      [(ngModel)]="dataFine"
+      id="dataFine"
+    />
+  </div>
+  <div class="form-group mx-1 mx-md-4 mb-2">
+    <button class="btn btn-danger me-3" (click)="annullaModifica(i)">Annulla</button>
+    <button class="btn btn-success" (click)="confermaModifica(i)">Conferma</button>
+  </div>
+</div>
         </div>
  </div>
     </div>
@@ -167,7 +217,13 @@ export class CarsComponent implements OnInit {
   sortBy: string = '';
   direction: string = '';
 
-  constructor(private carService: CarService, private userService: UserService, private authSrv: AuthService) {}
+  mostraForm: { [key: number]: boolean } = {};
+  modificaForm: { [key: number]: boolean } = {};
+  formAperto: boolean = false;
+  dataInizio: string = '';
+  dataFine: string = '';
+
+  constructor(private carService: CarService, private userService: UserService, private authSrv: AuthService, private bookingService: BookingService) {}
 
   ngOnInit(): void {
     this.subscription = this.authSrv.currentUser$.subscribe((user) => {
@@ -185,8 +241,13 @@ export class CarsComponent implements OnInit {
   }
 
   loadAllCars(): void {
-    this.carService.getAllCars().subscribe((cars) => (this.cars = cars));
-  }
+    this.carService.getAllCars().subscribe((cars: Car[]) => {
+      this.cars = cars;
+      cars.forEach((_, index: number) => this.mostraForm[index] = false);
+    });
+}
+
+
 
   onSearch(): void {
     if (this.marca)
@@ -218,7 +279,8 @@ export class CarsComponent implements OnInit {
     this.userService.getOpenBookingsForCurrentUser().subscribe(
       (bookings) => {
         this.bookings = bookings;
-        bookings.forEach((booking: any) => {
+        bookings.forEach((index: number) => this.mostraForm[index] = false,
+          (booking: any) => {
           console.log('Booking:', booking);
         });
       },
@@ -228,12 +290,97 @@ export class CarsComponent implements OnInit {
     );
   }
 
+  mostraFormPrenotazione(index: number) {
+    this.mostraForm[index] = true;
+    this.formAperto = true;
+}
 
-  modifyBooking(booking: any): void {
-    // Implementa la logica per modificare un booking
+conferma(index: number) {
+  if (this.dataInizio && this.dataFine) {
+    this.createBooking(this.cars[index], this.dataInizio, this.dataFine);
+    this.dataInizio = '';
+    this.dataFine = '';
+    this.mostraForm[index] = false;
+    this.formAperto = false;
+  }
+}
+
+  annulla(index: number) {
+    console.log('Operazione annullata');
+
+    this.dataInizio = '';
+    this.dataFine = '';
+    this.mostraForm[index] = false;
+    this.formAperto = false;
   }
 
-  deleteBooking(booking: any): void {
-    // Implementa la logica per cancellare un booking
+
+  createBooking(car: any, dataInizio: string, dataFine: string): void {
+    const newBooking: BookingPayload = {
+      dataInizio: new Date(dataInizio),
+      dataFine: new Date(dataFine),
+      carId: car.id
+    };
+
+    this.bookingService.createBooking(newBooking).subscribe(
+      (booking) => {
+        alert('Booking creato:');
+        this.loadUserBookings();
+      },
+      (error) => {
+        alert('Date inserite non disponibili');
+        console.error(error)
+      }
+    );
   }
+
+  modifyBooking(index: number): void {
+    this.modificaForm[index] = true;
+    this.dataInizio = '';
+    this.dataFine = '';
+    this.formAperto = true;
+}
+
+confermaModifica(index: number) {
+  if (this.dataInizio && this.dataFine) {
+      this.updateBooking(index, this.dataInizio, this.dataFine);
+      this.dataInizio = '';
+      this.dataFine = '';
+      this.modificaForm[index] = false;
+      this.formAperto = false;
+  }
+}
+
+
+  annullaModifica(index: number) {
+    console.log('Operazione annullata');
+
+    this.dataInizio = '';
+    this.dataFine = '';
+    this.modificaForm[index] = false;
+    this.formAperto = false;
+  }
+
+  updateBooking(index: number, dataInizio: string, dataFine: string): void {
+    const newBooking: BookingPayload = {
+      dataInizio: new Date(dataInizio),
+      dataFine: new Date(dataFine),
+      carId: this.bookings[index].carId
+    };
+
+    const bookingId = this.bookings[index].id;
+    this.bookingService.updateBooking(bookingId, newBooking).subscribe(
+      (booking) => {
+        alert('Booking modificato:');
+        this.loadUserBookings();
+      },
+      (error) => {
+        alert('Date inserite non disponibili');
+        console.error(error);
+      }
+    );
+}
+
+
+  deleteBooking(){}
 }

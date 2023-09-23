@@ -76,9 +76,4 @@ public class User implements UserDetails {
 		return true;
 	}
 	
-	public void addBooking(Booking booking) {
-		booking.setUser(this);
-		bookings.add(booking);
-		
-	}
 }

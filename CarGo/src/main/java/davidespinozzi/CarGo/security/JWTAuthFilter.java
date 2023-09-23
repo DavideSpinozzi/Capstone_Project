@@ -40,7 +40,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 	    }
 	    
 	    String token = authHeader.substring(7);
-	    System.out.println("TOKEN = " + token);
 	    jwttools.verifyToken(token);
 	    String id = jwttools.extractSubject(token);
 	    User currentUser = userService.findById(UUID.fromString(id));

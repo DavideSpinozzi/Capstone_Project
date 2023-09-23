@@ -69,8 +69,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Non c'è bisogno di sottoscriversi esplicitamente a user$
-    // grazie all'uso dell'operatore async nella template.
+
   }
 
   ngOnDestroy(): void {
