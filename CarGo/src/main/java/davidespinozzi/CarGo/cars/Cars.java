@@ -35,7 +35,7 @@ public class Cars {
 	private String tipoDiAlimentazione;
 	private String consumoAKm;
 	private Double costoGiornaliero;
-	@OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "car")
 	@JsonManagedReference
 	private List<Booking> bookings = new ArrayList<>();
 

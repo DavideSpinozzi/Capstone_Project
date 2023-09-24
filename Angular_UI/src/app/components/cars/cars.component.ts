@@ -149,7 +149,7 @@ Nome modello: {{booking.nomeModello}}
             <li class="list-group-item">Costo totale: {{booking.costoTotale}}€</li>
             <li class="list-group-item d-flex justify-content-between">
               <a *ngIf="!formAperto" class="text-warning" (click)="modifyBooking(i)">Modifica</a>
-              <a *ngIf="!formAperto" class="text-danger" (click)="deleteBooking()">Cancella</a>
+              <a *ngIf="!formAperto" class="text-danger" (click)="deleteBooking(i)">Cancella</a>
             </li>
           </ul>
           <!--div che compare quando premo modifica--><div *ngIf="modificaForm[i]">
@@ -369,6 +369,7 @@ confermaModifica(index: number) {
     };
 
     const bookingId = this.bookings[index].id;
+    console.log(bookingId);
     this.bookingService.updateBooking(bookingId, newBooking).subscribe(
       (booking) => {
         alert('Booking modificato:');
@@ -382,5 +383,19 @@ confermaModifica(index: number) {
 }
 
 
-  deleteBooking(){}
+deleteBooking(index: number): void {
+  const bookingToDelete = this.bookings[index];
+  if (bookingToDelete && bookingToDelete.id) {
+    console.log(bookingToDelete.id);
+    this.bookingService.deleteBooking(bookingToDelete.id).subscribe(
+      () => {
+        this.loadUserBookings();
+      },
+      error => {
+        console.error('Error deleting booking', error);
+      }
+    );
+  }
+}
+
 }

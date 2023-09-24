@@ -16,6 +16,7 @@ import davidespinozzi.CarGo.cars.Cars;
 import davidespinozzi.CarGo.exceptions.NotAvailableException;
 import davidespinozzi.CarGo.exceptions.NotFoundException;
 import davidespinozzi.CarGo.user.User;
+import davidespinozzi.CarGo.user.UsersService;
 
 @Service
 public class BookingService {
@@ -25,6 +26,9 @@ public class BookingService {
 
     @Autowired
     CarService carService;
+    
+    @Autowired
+    UsersService userService;
 
     public Booking createBooking(BookingPayload bookingPayload) throws NotFoundException, NotAvailableException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -117,9 +121,17 @@ public class BookingService {
     }
 
 
-    public void findByIdAndDelete(UUID id) throws NotFoundException {
-        Booking found = findById(id);
-        bookingRepository.delete(found);
+    public void findByIdAndDelete(UUID id) {
+        Booking booking = findById(id);
+        User user = userService.findById(booking.getUser().getId());
+        Cars car = carService.getCarById(booking.getCar().getId());
+        user.getBookings().remove(booking);
+        car.getBookings().remove(booking);
+
+        userService.save(user);
+        carService.save(car);
+
+        bookingRepository.delete(booking);
     }
 
     public Booking changeBookingState(UUID id, Stato newState) throws NotFoundException {

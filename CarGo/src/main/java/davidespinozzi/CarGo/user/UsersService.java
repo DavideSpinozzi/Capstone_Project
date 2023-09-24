@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import davidespinozzi.CarGo.bookings.Booking;
+import davidespinozzi.CarGo.bookings.BookingRepository;
 import davidespinozzi.CarGo.bookings.Stato;
 import davidespinozzi.CarGo.exceptions.BadRequestException;
 import davidespinozzi.CarGo.exceptions.NotFoundException;
@@ -18,9 +19,15 @@ import davidespinozzi.CarGo.exceptions.NotFoundException;
 public class UsersService {
 
 	@Autowired
+    private BookingRepository bookingRepository;
+	
+	@Autowired
 	UserRepository userRepository;
 
-	// SALVA NUOVO UTENTE + ECCEZIONE SE VIENE USATA LA STESSA EMAIL
+	public User save(User user) {
+	    return userRepository.save(user);
+	}
+
 	public User save(NewUserPayload body) {
 		userRepository.findByEmail(body.getEmail()).ifPresent(user -> {
 			throw new BadRequestException("L'email " + body.getEmail() + " è gia stata utilizzata");
@@ -29,17 +36,14 @@ public class UsersService {
 		return userRepository.save(newUser);
 	}
 
-	// TORNA LA LISTA DEGLI UTENTI
 	public List<User> getUsers() {
 		return userRepository.findAll();
 	}
 
-	// CERCA UTENTE TRAMITE ID
 	public User findById(UUID id) throws NotFoundException {
 		return userRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
 	}
 
-	// CERCA E MODIFICA UTENTE TRAMITE ID
 	public User findByIdAndUpdate(UUID id, NewUserPayload body) throws NotFoundException {
 		User found = this.findById(id);
 		found.setName(body.getName());
@@ -48,11 +52,16 @@ public class UsersService {
 		return userRepository.save(found);
 	}
 
-	// CERCA E CANCELLA UTENTE TRAMITE ID
-	public void findByIdAndDelete(UUID id) throws NotFoundException {
-		User found = this.findById(id);
-		userRepository.delete(found);
-	}
+	public void findByIdAndDelete(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id));
+        bookingRepository.deleteAll(
+            user.getBookings().stream()
+                .filter(booking -> booking.getStato() == Stato.APERTO)
+                .collect(Collectors.toList())
+        );
+        userRepository.delete(user);
+    }
 
 	public User findByEmail(String email) {
 		return userRepository.findByEmail(email)
@@ -81,7 +90,6 @@ public class UsersService {
 	               .filter(booking -> booking.getStato() == state)
 	               .collect(Collectors.toList());
 	}
-
 	
 	public UUID getCurrentUserId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

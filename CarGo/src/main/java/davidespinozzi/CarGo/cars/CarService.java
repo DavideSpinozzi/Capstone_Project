@@ -2,11 +2,15 @@ package davidespinozzi.CarGo.cars;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import davidespinozzi.CarGo.bookings.Booking;
+import davidespinozzi.CarGo.bookings.BookingRepository;
+import davidespinozzi.CarGo.bookings.Stato;
 import davidespinozzi.CarGo.exceptions.NotFoundException;
 
 @Service
@@ -14,6 +18,14 @@ public class CarService {
 
     @Autowired
     CarRepository carRepository;
+    
+    @Autowired
+    private BookingRepository bookingRepository;
+    
+    public Cars save(Cars car) {
+        return carRepository.save(car);
+    }
+
 
     public Cars createCar(CarPayload body) {
         Cars newCar = new Cars(body.getFoto(), body.getMarca(), body.getModello(), body.getColore(),
@@ -65,8 +77,14 @@ public class CarService {
         return carRepository.save(carToUpdate);
     }
 
-    public void deleteCarById(UUID id) throws NotFoundException {
-        Cars carToDelete = getCarById(id);
+    public void deleteCarById(UUID id) {
+        Cars carToDelete = carRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(id));
+        bookingRepository.deleteAll(
+            carToDelete.getBookings().stream()
+                .filter(booking -> booking.getStato() == Stato.APERTO)
+                .collect(Collectors.toList())
+        );
         carRepository.delete(carToDelete);
     }
 }

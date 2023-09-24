@@ -26,20 +26,20 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
-
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
     public ResponseEntity<Booking> createBooking(@RequestBody BookingPayload bookingPayload) throws NotFoundException, NotAvailableException {
         return new ResponseEntity<>(bookingService.createBooking(bookingPayload), HttpStatus.CREATED);
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public List<Booking> getAllBookings() {
         return bookingService.getBookings();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    
     public Booking getBookingById(@PathVariable UUID id) throws NotFoundException {
         return bookingService.findById(id);
     }
@@ -53,6 +53,7 @@ public class BookingController {
     public void deleteBooking(@PathVariable UUID id) throws NotFoundException {
         bookingService.findByIdAndDelete(id);
     }
+
 
     @PutMapping("/{id}/close")
     public ResponseEntity<Booking> closeBooking(@PathVariable UUID id) throws NotFoundException {
