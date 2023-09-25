@@ -5,15 +5,18 @@ import org.springframework.stereotype.Component;
 
 import davidespinozzi.CarGo.bookings.Booking;
 import davidespinozzi.CarGo.bookings.BookingRepository;
+import davidespinozzi.CarGo.bookings.BookingService;
 import davidespinozzi.CarGo.bookings.Stato;
 import davidespinozzi.CarGo.cars.CarPayload;
 import davidespinozzi.CarGo.cars.CarRepository;
 import davidespinozzi.CarGo.cars.CarService;
 import davidespinozzi.CarGo.exceptions.NotFoundException;
+import davidespinozzi.CarGo.user.UsersService;
 import jakarta.annotation.PostConstruct;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class AppInitializer {
@@ -23,6 +26,12 @@ public class AppInitializer {
 
 	@Autowired
 	BookingRepository bookingRepository;
+	
+	@Autowired
+	BookingService bookingService;
+	
+	@Autowired
+	UsersService userService;
 
 	@Autowired
 	CarService carService;
@@ -31,6 +40,8 @@ public class AppInitializer {
 	public void init() {
 		/*createCars();*/
 		deleteExpiredBookings();
+		/*changeRole();*/
+		/*changeStato();*/
 	}
 
 	private void createCars() {
@@ -61,7 +72,13 @@ public class AppInitializer {
 		}
 	}
 	
-	//UUID id = UUID.fromString("9f366823-428e-422e-a3d9-4a9c720b343b");
-    //userService.changeRole(id);
-
+	private void changeRole() {
+	UUID id = UUID.fromString("6dc889c9-ab9c-4f66-b460-79145a34e9df");
+    userService.changeRole(id);
+	}
+	
+	private void changeStato() {
+		UUID id = UUID.fromString("48745550-003e-4660-9f5b-c8cd34ca022f");
+	bookingService.changeBookingState(id, Stato.CHIUSO);
+	}
 }

@@ -123,11 +123,12 @@ import { BookingPayload } from 'src/app/interface/booking-payload';
   </div>
 </div>
             <div class="card-body row">
-              <div class="col-9">
+              <div class="col-7">
               <h5 class="card-title">{{ car.marca }} {{ car.modello }}</h5>
               <p class="card-text">€ {{ car.costoGiornaliero }}/giorno</p>
             </div>
-            <div *ngIf="user && !formAperto" class="col-3 d-flex justify-content-center align-items-center">
+            <div *ngIf="user && !formAperto" class="col-5 d-flex justify-content-center align-items-center pe-0">
+            <button class="btn btn-primary me-2" [routerLink]="['/details' , car.id]">Dettagli</button>
             <button class="btn btn-primary" (click)="mostraFormPrenotazione(i)">Prenota</button>
             </div>
             </div>
@@ -137,13 +138,13 @@ import { BookingPayload } from 'src/app/interface/booking-payload';
       </div>
     </div>
     <div class="col-0 col-md-2 border carrello" *ngIf="user">
-<div class="border row px-0 py-2"><div class="col-8 d-flex justify-content-center align-items-center px-0"><h2 class="text-center py-1">Carrello</h2></div><div class="col-4 d-flex justify-content-center align-items-center px-0"><button type="button" class="btn btn-success fs-5">Acquista</button></div></div>
+<div class="border row px-0 py-2"><div class="col-8 d-flex justify-content-center align-items-center px-0"><h2 class="text-center py-1">Carrello</h2></div><div class="col-4 d-flex justify-content-center align-items-center px-0"><button *ngIf="bookings.length > 0" type="button" class="btn btn-success fs-5">Acquista</button></div></div>
  <div class="d-flex flex-column align-items-center">
  <div class="card my-2" *ngFor="let booking of bookings; let i = index" style="width: 18rem;">
           <div class="card-header">
 Nome modello: {{booking.nomeModello}}
           </div>
-          <!--ul che scompare quando premo modifica--><ul *ngIf="!modificaForm[i]" class="list-group list-group-flush">
+           <ul *ngIf="!modificaForm[i]" class="list-group list-group-flush">
             <li class="list-group-item">Inizio: {{booking.dataInizio}}</li>
             <li class="list-group-item">Fine: {{booking.dataFine}}</li>
             <li class="list-group-item">Costo totale: {{booking.costoTotale}}€</li>
@@ -152,7 +153,7 @@ Nome modello: {{booking.nomeModello}}
               <a *ngIf="!formAperto" class="text-danger" (click)="deleteBooking(i)">Cancella</a>
             </li>
           </ul>
-          <!--div che compare quando premo modifica--><div *ngIf="modificaForm[i]">
+<div *ngIf="modificaForm[i]">
   <div class="form-group mx-1 mx-md-4 my-3">
     <label class="text-primary" for="dataInizio">Data di Inizio</label>
     <input

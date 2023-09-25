@@ -29,6 +29,7 @@ public class Booking {
     @GeneratedValue
     private UUID id;
     private String nomeModello;
+    private String emailAcquirente;
     private LocalDate dataInizio;
     private LocalDate dataFine;
     private Double costoTotale;

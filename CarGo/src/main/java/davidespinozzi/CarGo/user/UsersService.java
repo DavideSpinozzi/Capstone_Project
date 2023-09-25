@@ -49,19 +49,34 @@ public class UsersService {
 		found.setName(body.getName());
 		found.setSurname(body.getSurname());
 		found.setEmail(body.getEmail());
+		List<Booking> associatedBookings = found.getBookings();
+	    for (Booking booking : associatedBookings) {
+	        booking.setEmailAcquirente(body.getEmail());
+	        bookingRepository.save(booking);
+	    }
 		return userRepository.save(found);
 	}
 
 	public void findByIdAndDelete(UUID id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id));
-        bookingRepository.deleteAll(
-            user.getBookings().stream()
-                .filter(booking -> booking.getStato() == Stato.APERTO)
-                .collect(Collectors.toList())
-        );
-        userRepository.delete(user);
-    }
+	    User user = userRepository.findById(id)
+	            .orElseThrow(() -> new NotFoundException(id));
+	    
+	    List<Booking> bookings = user.getBookings();
+	    for(Booking booking: bookings) {
+	        if(booking.getStato() == Stato.CHIUSO) {
+	            booking.setUser(null);
+	            bookingRepository.save(booking);
+	        }
+	    }
+	    bookingRepository.deleteAll(
+	        user.getBookings().stream()
+	            .filter(booking -> booking.getStato() == Stato.APERTO)
+	            .collect(Collectors.toList())
+	    );
+	    userRepository.delete(user);
+	}
+
+
 
 	public User findByEmail(String email) {
 		return userRepository.findByEmail(email)

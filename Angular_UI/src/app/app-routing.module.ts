@@ -6,6 +6,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { ProfileComponent } from './components/profile/profile.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
+import { DetailsComponent } from './components/details/details.component';
 
 const routes: Routes = [
   {
@@ -17,11 +18,12 @@ const routes: Routes = [
       component: CarsComponent,
   },
   {
+    path: 'details/:id',
+    component: DetailsComponent,
+},
+  {
       path: 'profile',
       component: ProfileComponent,
-      children: [
-
-      ],
       canActivate: [AuthGuard],
   },
   {

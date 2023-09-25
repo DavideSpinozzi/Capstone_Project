@@ -62,6 +62,7 @@ public class BookingService {
         long daysBetween = ChronoUnit.DAYS.between(dataInizio, dataFine);
         Booking newBooking = new Booking(dataInizio, dataFine);
         newBooking.setNomeModello(car.getModello());
+        newBooking.setEmailAcquirente(currentUser.getEmail());
         newBooking.setCostoTotale(daysBetween * car.getCostoGiornaliero());
         newBooking.setCar(car);
         newBooking.setUser(currentUser);

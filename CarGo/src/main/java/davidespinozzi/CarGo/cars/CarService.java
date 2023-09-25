@@ -74,12 +74,26 @@ public class CarService {
         carToUpdate.setTipoDiAlimentazione(body.getTipoDiAlimentazione());
         carToUpdate.setConsumoAKm(body.getConsumoAKm());
         carToUpdate.setCostoGiornaliero(body.getCostoGiornaliero());
+        List<Booking> associatedBookings = carToUpdate.getBookings();
+        for (Booking booking : associatedBookings) {
+            booking.setNomeModello(body.getModello());
+            bookingRepository.save(booking);
+        }
         return carRepository.save(carToUpdate);
     }
 
     public void deleteCarById(UUID id) {
         Cars carToDelete = carRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id));
+
+        List<Booking> bookings = carToDelete.getBookings();
+
+        for(Booking booking: bookings) {
+            if(booking.getStato() == Stato.CHIUSO) {
+                booking.setCar(null);
+                bookingRepository.save(booking);
+            }
+        }
         bookingRepository.deleteAll(
             carToDelete.getBookings().stream()
                 .filter(booking -> booking.getStato() == Stato.APERTO)
@@ -87,4 +101,5 @@ public class CarService {
         );
         carRepository.delete(carToDelete);
     }
+
 }
