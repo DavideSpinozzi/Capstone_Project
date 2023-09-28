@@ -1,5 +1,6 @@
 package davidespinozzi.CarGo.user;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -14,6 +15,9 @@ import davidespinozzi.CarGo.bookings.BookingRepository;
 import davidespinozzi.CarGo.bookings.Stato;
 import davidespinozzi.CarGo.exceptions.BadRequestException;
 import davidespinozzi.CarGo.exceptions.NotFoundException;
+import davidespinozzi.CarGo.payment.Payment;
+import davidespinozzi.CarGo.payment.PaymentRepository;
+
 
 @Service
 public class UsersService {
@@ -23,6 +27,9 @@ public class UsersService {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	PaymentRepository paymentRepository;
 
 	public User save(User user) {
 	    return userRepository.save(user);
@@ -61,22 +68,34 @@ public class UsersService {
 	    User user = userRepository.findById(id)
 	            .orElseThrow(() -> new NotFoundException(id));
 	    
-	    List<Booking> bookings = user.getBookings();
-	    for(Booking booking: bookings) {
-	        if(booking.getStato() == Stato.CHIUSO) {
-	            booking.setUser(null);
-	            bookingRepository.save(booking);
+	    List<Payment> payments = user.getPayments();
+	    if(payments != null) {
+	        List<Payment> modifiedPayments = new ArrayList<>();
+	        for(Payment payment : payments){
+	            payment.setUser(null);
+	            modifiedPayments.add(payment);
 	        }
+	        paymentRepository.saveAll(modifiedPayments);
 	    }
-	    bookingRepository.deleteAll(
-	        user.getBookings().stream()
+	    
+	    List<Booking> bookings = user.getBookings();
+	    if(bookings != null) {
+	        List<Booking> modifiedBookings = new ArrayList<>();
+	        for(Booking booking: bookings) {
+	            if(booking.getStato() == Stato.CHIUSO) {
+	                booking.setUser(null);
+	                modifiedBookings.add(booking);
+	            }
+	        }
+	        bookingRepository.saveAll(modifiedBookings);
+
+	        List<Booking> bookingsToDelete = bookings.stream()
 	            .filter(booking -> booking.getStato() == Stato.APERTO)
-	            .collect(Collectors.toList())
-	    );
+	            .collect(Collectors.toList());
+	        bookingRepository.deleteAll(bookingsToDelete);
+	    }
 	    userRepository.delete(user);
 	}
-
-
 
 	public User findByEmail(String email) {
 		return userRepository.findByEmail(email)

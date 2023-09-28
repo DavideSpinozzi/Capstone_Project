@@ -1,5 +1,6 @@
 package davidespinozzi.CarGo.cars;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -77,6 +78,7 @@ public class CarService {
         List<Booking> associatedBookings = carToUpdate.getBookings();
         for (Booking booking : associatedBookings) {
             booking.setNomeModello(body.getModello());
+            booking.setCostoTotale((ChronoUnit.DAYS.between(booking.getDataInizio(), booking.getDataFine())*body.getCostoGiornaliero()));
             bookingRepository.save(booking);
         }
         return carRepository.save(carToUpdate);

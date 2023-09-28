@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { CarPayload } from '../interface/car-payload';
 
 @Injectable({
@@ -8,8 +8,16 @@ import { CarPayload } from '../interface/car-payload';
 })
 export class CarService {
   private baseUrl = 'http://localhost:4000/cars';
+  private carsSubject = new BehaviorSubject<CarPayload[]>([]);
+  cars$ = this.carsSubject.asObservable();
 
   constructor(private http: HttpClient) { }
+
+  refreshCars() {
+    this.getAllCars().subscribe(cars => {
+      this.carsSubject.next(cars);
+    });
+  }
 
   createCar(payload: CarPayload): Observable<any> {
     return this.http.post(`${this.baseUrl}/create`, payload);

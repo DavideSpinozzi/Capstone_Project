@@ -7,6 +7,11 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { DetailsComponent } from './components/details/details.component';
+import { CheckoutComponent } from './components/checkout/checkout.component';
+import { CreateCarComponent } from './components/create-car/create-car.component';
+import { ManageBookingComponent } from './components/manage-booking/manage-booking.component';
+import { ManageUserComponent } from './components/manage-user/manage-user.component';
+import { ManagePaymentComponent } from './components/manage-payment/manage-payment.component';
 
 const routes: Routes = [
   {
@@ -34,6 +39,31 @@ const routes: Routes = [
       path: 'register',
       component: RegisterComponent,
   },
+  {
+    path: 'checkout',
+    component: CheckoutComponent,
+    canActivate: [AuthGuard],
+},
+{
+  path: 'createCar',
+  component: CreateCarComponent,
+  canActivate: [AuthGuard],
+},
+{
+  path: 'manageBooking',
+  component: ManageBookingComponent,
+  canActivate: [AuthGuard],
+},
+{
+  path: 'manageUser',
+  component: ManageUserComponent,
+  canActivate: [AuthGuard],
+},
+{
+  path: 'managePayment',
+  component: ManagePaymentComponent,
+  canActivate: [AuthGuard],
+},
 ];
 
 @NgModule({

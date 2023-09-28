@@ -55,7 +55,6 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     this.authService.login(this.email, this.password).subscribe(
       response => {
-        alert("Logged in successfully!");
         this.router.navigate(['']);
       },
       error => {

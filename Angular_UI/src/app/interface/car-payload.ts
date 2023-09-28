@@ -1,4 +1,5 @@
 export interface CarPayload {
+  id: string;
   foto: string;
   marca: string;
   modello: string;

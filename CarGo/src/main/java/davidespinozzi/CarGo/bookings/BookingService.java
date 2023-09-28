@@ -15,6 +15,8 @@ import davidespinozzi.CarGo.cars.CarService;
 import davidespinozzi.CarGo.cars.Cars;
 import davidespinozzi.CarGo.exceptions.NotAvailableException;
 import davidespinozzi.CarGo.exceptions.NotFoundException;
+import davidespinozzi.CarGo.payment.Payment;
+import davidespinozzi.CarGo.payment.PaymentService;
 import davidespinozzi.CarGo.user.User;
 import davidespinozzi.CarGo.user.UsersService;
 
@@ -29,6 +31,9 @@ public class BookingService {
     
     @Autowired
     UsersService userService;
+    
+    @Autowired
+    PaymentService paymentService;
 
     public Booking createBooking(BookingPayload bookingPayload) throws NotFoundException, NotAvailableException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -120,15 +125,62 @@ public class BookingService {
         existingBooking.setCostoTotale(daysBetween * car.getCostoGiornaliero());
         return save(existingBooking);
     }
+    
+    public Booking updateBookingAdmin(UUID id, BookingPayload bookingPayload) throws NotFoundException, NotAvailableException {
+ 
+        Booking existingBooking = findById(id);
+        Cars car = carService.getCarById(existingBooking.getCar().getId());
 
+        if (car == null) throw new NotFoundException("Auto non trovata.");
+
+        LocalDate dataInizio = bookingPayload.getDataInizio();
+        LocalDate dataFine = bookingPayload.getDataFine();
+
+        if (dataInizio == null || dataFine == null) throw new IllegalArgumentException("Le date non possono essere nulle");
+        if (dataInizio.isBefore(LocalDate.now()) || dataFine.isBefore(LocalDate.now())) throw new IllegalArgumentException("Le date non possono essere precedenti alla data corrente");
+        
+        List<Booking> overlappingBookings = car.getBookings().stream()
+        		.filter(booking -> !booking.getId().equals(id))
+                .filter(booking -> booking.getStato() == Stato.CHIUSO)
+                .filter(booking -> isDateOverlap(booking.getDataInizio(), booking.getDataFine(), dataInizio, dataFine))
+                .collect(Collectors.toList());
+
+        if (!overlappingBookings.isEmpty()) throw new NotAvailableException("Date prenotate non disponibili per questa auto.");
+
+        long daysBetween = ChronoUnit.DAYS.between(dataInizio, dataFine);
+        existingBooking.setDataInizio(dataInizio);
+        existingBooking.setDataFine(dataFine);
+        existingBooking.setCostoTotale(daysBetween * car.getCostoGiornaliero());
+        return save(existingBooking);
+    }
+
+    public void deleteBookingAdmin(UUID id) throws NotFoundException {
+        Booking booking = findById(id);
+        Cars car = carService.getCarById(booking.getCar().getId());
+        car.getBookings().remove(booking);
+        carService.save(car);
+        if (booking.getPayment() != null) {
+            Payment payment = paymentService.getPaymentById(booking.getPayment().getId());
+            payment.getBookings().remove(booking);
+            paymentService.save(payment);
+        }
+        
+        bookingRepository.delete(booking);
+    }
 
     public void findByIdAndDelete(UUID id) {
         Booking booking = findById(id);
         User user = userService.findById(booking.getUser().getId());
         Cars car = carService.getCarById(booking.getCar().getId());
+        Payment payment = null;
+        if (booking.getPayment() != null) {
+            payment = paymentService.getPaymentById(booking.getPayment().getId());
+            payment.getBookings().remove(booking);
+            paymentService.save(payment);
+        }
         user.getBookings().remove(booking);
         car.getBookings().remove(booking);
-
+  
         userService.save(user);
         carService.save(car);
 
@@ -140,16 +192,39 @@ public class BookingService {
         found.setStato(newState);
         return save(found);
     }
+    
+    public List<Booking> getOpenBookings() {
+        return bookingRepository.findByStato(Stato.APERTO);
+    }
+
+    public List<Booking> getClosedBookings() {
+        return bookingRepository.findByStato(Stato.CHIUSO);
+    }
+
 
     public boolean isDateOverlap(LocalDate startDate1, LocalDate endDate1, LocalDate startDate2, LocalDate endDate2) {
         if (startDate1 == null || endDate1 == null || startDate2 == null || endDate2 == null)
             throw new IllegalArgumentException("Le date non possono essere nulle");
-
+        
+        if (startDate1.isAfter(endDate1))
+            throw new IllegalArgumentException("startDate1 non può essere dopo endDate1");
+        
+        if (startDate2.isAfter(endDate2))
+            throw new IllegalArgumentException("startDate2 non può essere dopo endDate2");
+        
+        if (startDate1.isEqual(endDate1))
+            throw new IllegalArgumentException("La data di inizio e la data di fine startDate1 e endDate1 non possono essere uguali");
+        
+        if (startDate2.isEqual(endDate2))
+            throw new IllegalArgumentException("La data di inizio e la data di fine startDate2 e endDate2 non possono essere uguali");
+        
         return (startDate1.isEqual(startDate2) || startDate1.isAfter(startDate2)) && startDate1.isBefore(endDate2) ||
                (endDate1.isEqual(endDate2) || endDate1.isBefore(endDate2)) && endDate1.isAfter(startDate2) ||
                (startDate2.isEqual(startDate1) || startDate2.isAfter(startDate1)) && startDate2.isBefore(endDate1) ||
                (endDate2.isEqual(endDate1) || endDate2.isBefore(endDate1)) && endDate2.isAfter(startDate1);
     }
+
+
 
     public Booking save(Booking booking) {
         return bookingRepository.save(booking);

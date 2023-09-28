@@ -3,6 +3,7 @@ package davidespinozzi.CarGo.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -38,8 +39,12 @@ public class SecurityConfig {
 		    auth.requestMatchers("/auth/**").permitAll(); 
 		    auth.requestMatchers("/users/**").authenticated();
 		    auth.requestMatchers("/cars").permitAll();
-		    auth.requestMatchers("/cars/**").authenticated();
+		    auth.requestMatchers(HttpMethod.GET,"/cars/**").permitAll();
+		    auth.requestMatchers(HttpMethod.DELETE,"/cars/**").hasAuthority("ADMIN");
+		    auth.requestMatchers(HttpMethod.PUT,"/cars/**").hasAuthority("ADMIN");
+		    auth.requestMatchers(HttpMethod.POST,"/cars/**").hasAuthority("ADMIN");
 		    auth.requestMatchers("/bookings/**").authenticated();
+		    auth.requestMatchers("/payments/**").authenticated();
 		});
 
 		return http.build();

@@ -43,10 +43,11 @@ import { UserService } from 'src/app/service/user.service';
     </div>
   </div>
 </div>
-
-          <div *ngIf="openBookings.length > 0" class="mt-4">
-            <h5>Prenotazioni Aperte:</h5>
-            <div *ngFor="let booking of openBookings; let i = index" class="card mt-2">
+</div>
+          <div *ngIf="openBookings.length > 0" class="m-4 row">
+            <h5 class="text-center">Prenotazioni Aperte:</h5>
+            <div *ngFor="let booking of openBookings; let i = index" class="col-12 col-md-3 my-2">
+              <div class="card">
             <div class="card-header">Nome modello: {{booking.nomeModello}}
           </div>
               <ul *ngIf="!modificaForm[i]" class="list-group list-group-flush">
@@ -87,13 +88,14 @@ import { UserService } from 'src/app/service/user.service';
                   <button class="btn btn-success" (click)="modifyBooking(booking.id)">Conferma</button>
                 </div>
               </div>
-
+</div>
             </div>
           </div>
 
-          <div *ngIf="closedBookings.length > 0" class="mt-4">
-            <h5>Prenotazioni Chiuse:</h5>
-            <div *ngFor="let booking of closedBookings" class="card mt-2">
+          <div *ngIf="closedBookings.length > 0" class="m-4 row">
+            <h5 class="text-center">Prenotazioni Chiuse:</h5>
+            <div *ngFor="let booking of closedBookings" class="col-12 col-md-3 mt-2">
+              <div class="card">
             <div class="card-header">Nome modello: {{booking.nomeModello}}
           </div>
               <ul class="list-group list-group-flush">
@@ -104,8 +106,9 @@ import { UserService } from 'src/app/service/user.service';
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+
   `,
   styles: [
     `
@@ -227,13 +230,11 @@ export class ProfileComponent implements OnInit {
 
   deleteUser(): void {
     if (confirm("Sei sicuro di voler eliminare il tuo profilo?")) {
-      this.userService.deleteUser(this.user.id).subscribe(
+      this.userService.deleteCurrentUser().subscribe(
         () => {
           console.log("Utente eliminato con successo");
           this.authService.logout().subscribe(() => {
-            this.router.navigate(['/login']).then(() => {
-              location.reload();
-            });
+            this.router.navigate(['/login'])
           });
         },
         error => console.error('Errore durante l\'eliminazione dell\'utente', error)

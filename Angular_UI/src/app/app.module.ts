@@ -14,6 +14,13 @@ import { CarsComponent } from './components/cars/cars.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { DetailsComponent } from './components/details/details.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CheckoutComponent } from './components/checkout/checkout.component';
+import { CreateCarComponent } from './components/create-car/create-car.component';
+import { ManageBookingComponent } from './components/manage-booking/manage-booking.component';
+import { ManageUserComponent } from './components/manage-user/manage-user.component';
+import { ManagePaymentComponent } from './components/manage-payment/manage-payment.component';
+
 
 @NgModule({
   declarations: [
@@ -25,13 +32,19 @@ import { DetailsComponent } from './components/details/details.component';
     CarsComponent,
     ProfileComponent,
     FooterComponent,
-    DetailsComponent
+    DetailsComponent,
+    CheckoutComponent,
+    CreateCarComponent,
+    ManageBookingComponent,
+    ManageUserComponent,
+    ManagePaymentComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [
     {

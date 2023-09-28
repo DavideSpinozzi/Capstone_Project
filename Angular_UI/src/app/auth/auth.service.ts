@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { NewUserPayload } from '../interface/new-user-payload';
 
@@ -24,9 +24,11 @@ export class AuthService {
           if (response && response.accessToken) {
             localStorage.setItem('token', response.accessToken);
             this.getCurrentUser();
+            alert("Loggato con successo!");
           }
         }),
         catchError(err => {
+          alert("Credenziali errate o inesistenti!");
           console.error('Login Error:', err);
           return of(null);
         })
@@ -53,16 +55,16 @@ export class AuthService {
 
   logout(): Observable<any> {
     localStorage.removeItem('token');
-    this.router.navigate(['']);
     return this.http.post<any>('http://localhost:4000/auth/logout', null, { responseType: 'text' as 'json' })
       .pipe(
         tap(() => this.currentUserSubject.next(null)),
         catchError(err => {
           console.error('Logout Error:', err);
           return of(null);
-        })
+        }),
+        finalize(() => this.router.navigate(['']))
       );
-  }
+}
 
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');

@@ -31,8 +31,17 @@ export class UserService {
     return this.http.put(`${this.baseUrl}/${id}`, payload);
   }
 
+  changeRole(id: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}/change-role`, {});
+  }
+
+
   deleteUser(id: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`);
+  }
+
+  deleteCurrentUser(): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/current`);
   }
 
   getUserByEmail(email: string): Observable<any> {

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import davidespinozzi.CarGo.bookings.Booking;
+import davidespinozzi.CarGo.payment.Payment;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,9 +34,12 @@ public class User implements UserDetails {
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private Role role;
-	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.DETACH )
 	@JsonManagedReference
 	private List<Booking> bookings = new ArrayList<>();
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+	@JsonManagedReference
+	private List<Payment> payments = new ArrayList<>();
 
 	public User(String name, String surname, String email, String password) {
 		this.name = name;

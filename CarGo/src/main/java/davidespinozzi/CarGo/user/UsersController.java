@@ -1,9 +1,10 @@
 package davidespinozzi.CarGo.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.bind.annotation.*;
 
 import davidespinozzi.CarGo.bookings.Booking;
@@ -51,6 +52,19 @@ public class UsersController {
     public User updateUser(@PathVariable UUID id, @RequestBody NewUserPayload body) {
         return usersService.findByIdAndUpdate(id, body);
     }
+    
+    @PutMapping("/{id}/change-role")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<User> changeRole(@PathVariable UUID id) {
+        try {
+            usersService.changeRole(id);
+            User updatedUser = usersService.findById(id);
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
   
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -58,6 +72,12 @@ public class UsersController {
         usersService.findByIdAndDelete(id);
     }
 
+    @DeleteMapping("/current")
+    @PreAuthorize("isAuthenticated()")
+    public void deleteCurrentUser() {
+        usersService.findByIdAndDelete(usersService.getCurrentUserId());
+    }
+    
     @GetMapping("/email/{email}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public User getUserByEmail(@PathVariable String email) {

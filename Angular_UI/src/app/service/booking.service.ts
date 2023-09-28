@@ -27,11 +27,27 @@ export class BookingService {
     return this.http.put(`${this.baseUrl}/${id}`, payload);
   }
 
+  updateBookingAdmin(id: string, payload: BookingPayload): Observable<any> {
+    return this.http.put(`${this.baseUrl}/admin/${id}`, payload);
+  }
+
   deleteBooking(id: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
 
+  deleteBookingAdmin(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/admin/${id}`);
+  }
+
   closeBooking(id: string): Observable<any> {
     return this.http.put(`${this.baseUrl}/${id}/close`, {});
+  }
+
+  getOpenBookings(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/open`);
+  }
+
+  getClosedBookings(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/closed`);
   }
 }

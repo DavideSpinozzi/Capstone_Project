@@ -6,8 +6,8 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import davidespinozzi.CarGo.cars.Cars;
+import davidespinozzi.CarGo.payment.Payment;
 import davidespinozzi.CarGo.user.User;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -43,6 +43,10 @@ public class Booking {
     @JoinColumn(name = "car_id")
     @JsonBackReference
      private Cars car;
+    @ManyToOne
+    @JoinColumn(name = "payment_id")
+    @JsonBackReference
+     private Payment payment;
 
     public Booking(LocalDate dataInizio, LocalDate dataFine) {
         this.dataInizio = dataInizio;

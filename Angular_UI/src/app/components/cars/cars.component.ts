@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { BookingService } from 'src/app/service/booking.service';
 import { BookingPayload } from 'src/app/interface/booking-payload';
+import { CarPayload } from 'src/app/interface/car-payload';
 
 @Component({
   selector: 'app-cars',
@@ -127,9 +128,9 @@ import { BookingPayload } from 'src/app/interface/booking-payload';
               <h5 class="card-title">{{ car.marca }} {{ car.modello }}</h5>
               <p class="card-text">€ {{ car.costoGiornaliero }}/giorno</p>
             </div>
-            <div *ngIf="user && !formAperto" class="col-5 d-flex justify-content-center align-items-center pe-0">
+            <div class="col-5 d-flex justify-content-center align-items-center pe-0">
             <button class="btn btn-primary me-2" [routerLink]="['/details' , car.id]">Dettagli</button>
-            <button class="btn btn-primary" (click)="mostraFormPrenotazione(i)">Prenota</button>
+            <button *ngIf="user && !formAperto" class="btn btn-primary" (click)="mostraFormPrenotazione(i)">Prenota</button>
             </div>
             </div>
           </div>
@@ -138,8 +139,9 @@ import { BookingPayload } from 'src/app/interface/booking-payload';
       </div>
     </div>
     <div class="col-0 col-md-2 border carrello" *ngIf="user">
-<div class="border row px-0 py-2"><div class="col-8 d-flex justify-content-center align-items-center px-0"><h2 class="text-center py-1">Carrello</h2></div><div class="col-4 d-flex justify-content-center align-items-center px-0"><button *ngIf="bookings.length > 0" type="button" class="btn btn-success fs-5">Acquista</button></div></div>
- <div class="d-flex flex-column align-items-center">
+<div class="border row px-0 py-2"><div class="col-8 d-flex justify-content-center align-items-center px-0"><h2 class="text-center py-1">Carrello</h2></div><div class="col-4 d-flex justify-content-center align-items-center px-0"><button *ngIf="bookings.length > 0" type="button" class="btn btn-success fs-5" [routerLink]="['/checkout']">Acquista</button></div></div>
+<div *ngIf="bookings.length > 0" class="text-center fs-4 py-1 border-bottom">Costo totale: {{ totalCost }}€</div>
+<div class="d-flex flex-column align-items-center">
  <div class="card my-2" *ngFor="let booking of bookings; let i = index" style="width: 18rem;">
           <div class="card-header">
 Nome modello: {{booking.nomeModello}}
@@ -210,7 +212,7 @@ export class CarsComponent implements OnInit {
   user: any = null;
   private subscription: Subscription | null = null;
 
-  cars: Car[] = [];
+  cars: CarPayload[] = [];
   bookings: any[] = [];
   marca: string = '';
   modello: string = '';
@@ -223,6 +225,7 @@ export class CarsComponent implements OnInit {
   formAperto: boolean = false;
   dataInizio: string = '';
   dataFine: string = '';
+  totalCost: number = 0;
 
   constructor(private carService: CarService, private userService: UserService, private authSrv: AuthService, private bookingService: BookingService) {}
 
@@ -231,7 +234,10 @@ export class CarsComponent implements OnInit {
       console.log('User:', user);
       this.user = user;
     });
-    this.loadAllCars();
+    this.carService.cars$.subscribe(cars => {
+      this.cars = cars;
+    });
+    this.carService.refreshCars();
     this.loadUserBookings();
   }
 
@@ -241,14 +247,10 @@ export class CarsComponent implements OnInit {
     }
   }
 
-  loadAllCars(): void {
-    this.carService.getAllCars().subscribe((cars: Car[]) => {
-      this.cars = cars;
-      cars.forEach((_, index: number) => this.mostraForm[index] = false);
-    });
-}
-
-
+  calculateTotalCost(): void {
+    this.totalCost = this.bookings.reduce((acc, booking) => acc + booking.costoTotale, 0);
+    console.log("Costo totale" + this.totalCost)
+  }
 
   onSearch(): void {
     if (this.marca)
@@ -267,7 +269,7 @@ export class CarsComponent implements OnInit {
       this.carService
         .getAllCarsSorted(this.sortBy, this.direction)
         .subscribe((cars) => (this.cars = cars));
-    else this.loadAllCars();
+    else this.carService.getAllCars();
   }
 
   setSorting(sortBy: string, direction: string): void {
@@ -280,6 +282,7 @@ export class CarsComponent implements OnInit {
     this.userService.getOpenBookingsForCurrentUser().subscribe(
       (bookings) => {
         this.bookings = bookings;
+        this.calculateTotalCost();
         bookings.forEach((index: number) => this.mostraForm[index] = false,
           (booking: any) => {
           console.log('Booking:', booking);

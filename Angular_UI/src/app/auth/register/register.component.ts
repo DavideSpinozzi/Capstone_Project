@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NewUserPayload } from 'src/app/interface/new-user-payload';
+import { AuthService } from '../auth.service';
+
 
 @Component({
   selector: 'app-register',
@@ -11,24 +12,28 @@ import { NewUserPayload } from 'src/app/interface/new-user-payload';
         <div class="col-md-6">
           <div class="card bg-white p-4">
             <h4 class="text-primary mb-3 text-center">Registrati</h4>
-            <form (ngSubmit)="onSubmit()">
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
               <div class="form-group">
                 <label class="text-primary mb-1">Nome</label>
-                <input type="text" class="form-control" [(ngModel)]="name" name="name" required>
+                <input type="text" class="form-control" formControlName="name" required>
               </div>
               <div class="form-group">
                 <label class="text-primary my-1">Cognome</label>
-                <input type="text" class="form-control" [(ngModel)]="surname" name="surname" required>
+                <input type="text" class="form-control" formControlName="surname" required>
               </div>
               <div class="form-group">
-                <label class="text-primary my-1">Email</label>
-                <input type="email" class="form-control" [(ngModel)]="email" name="email" required>
-              </div>
+    <label class="text-primary my-1">Email</label>
+    <input type="email" class="form-control" formControlName="email" required>
+    <div *ngIf="registerForm.controls['email'].invalid && registerForm.controls['email'].touched" class="text-danger">
+        Inserisci un indirizzo email valido.
+    </div>
+</div>
+
               <div class="form-group">
                 <label class="text-primary my-1">Password</label>
-                <input type="password" class="form-control" [(ngModel)]="password" name="password" required>
+                <input type="password" class="form-control" formControlName="password" required>
               </div>
-              <button type="submit" class="btn btn-primary btn-block mt-4">Registrati</button>
+              <button type="submit" class="btn btn-primary btn-block mt-4" [disabled]="registerForm.invalid">Registrati</button>
             </form>
           </div>
         </div>
@@ -42,33 +47,31 @@ import { NewUserPayload } from 'src/app/interface/new-user-payload';
   ]
 })
 export class RegisterComponent implements OnInit {
-  name: string = '';
-  surname: string = '';
-  email: string = '';
-  password: string = '';
+  registerForm: FormGroup;
 
-  constructor(private authService: AuthService, private router: Router) { }
-
-  ngOnInit(): void {
+  constructor(private authService: AuthService, private router: Router) {
+    this.registerForm = new FormGroup({
+      name: new FormControl('', Validators.required),
+      surname: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', Validators.required)
+    });
   }
+
+  ngOnInit(): void {}
 
   onSubmit(): void {
-    const newUser: NewUserPayload = {
-      name: this.name,
-      surname: this.surname,
-      email: this.email,
-      password: this.password
-    };
-    this.authService.register(newUser).subscribe(
-      response => {
-        alert("Registrato con successo!");
-        this.router.navigate(['/login']);
-      },
-      error => {
-        console.error("Errore durante la registrazione!", error);
-      }
-    );
+    if (this.registerForm.valid) {
+      const newUser = this.registerForm.value;
+      this.authService.register(newUser).subscribe(
+        response => {
+          alert("Registrato con successo!");
+          this.router.navigate(['/login']);
+        },
+        error => {
+          console.error("Errore durante la registrazione!", error);
+        }
+      );
+    }
   }
-
 }
-

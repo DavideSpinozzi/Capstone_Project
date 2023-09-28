@@ -44,9 +44,27 @@ public class BookingController {
         return bookingService.findById(id);
     }
 
+    @GetMapping("/open")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<Booking> getOpenBookings() {
+        return bookingService.getOpenBookings();
+    }
+
+    @GetMapping("/closed")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<Booking> getClosedBookings() {
+        return bookingService.getClosedBookings();
+    }
+
+    
     @PutMapping("/{id}")
     public ResponseEntity<Booking> updateBooking(@PathVariable UUID id, @RequestBody BookingPayload bookingPayload) throws NotFoundException, NotAvailableException {
         return new ResponseEntity<>(bookingService.updateBooking(id, bookingPayload), HttpStatus.OK);
+    }
+    
+    @PutMapping("/admin/{id}")
+    public ResponseEntity<Booking> updateBookingAdmin(@PathVariable UUID id, @RequestBody BookingPayload bookingPayload) throws NotFoundException, NotAvailableException {
+        return new ResponseEntity<>(bookingService.updateBookingAdmin(id, bookingPayload), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -54,6 +72,10 @@ public class BookingController {
         bookingService.findByIdAndDelete(id);
     }
 
+    @DeleteMapping("/admin/{id}")
+    public void deleteBookingAdmin(@PathVariable UUID id) throws NotFoundException {
+        bookingService.deleteBookingAdmin(id);
+    }
 
     @PutMapping("/{id}/close")
     public ResponseEntity<Booking> closeBooking(@PathVariable UUID id) throws NotFoundException {

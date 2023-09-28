@@ -27,6 +27,18 @@ import { AuthService } from 'src/app/auth/auth.service';
             <li class="nav-item">
               <a class="nav-link text-black fs-5" [routerLink]="['/cars']" routerLinkActive="active">Auto</a>
             </li>
+            <li *ngIf="userRole === 'ADMIN'" class="nav-item">
+              <a class="nav-link text-warning fs-5" [routerLink]="['/createCar']" routerLinkActive="active">Aggiungi un auto</a>
+            </li>
+            <li *ngIf="userRole === 'ADMIN'" class="nav-item">
+              <a class="nav-link text-warning fs-5" [routerLink]="['/manageBooking']" routerLinkActive="active">Gestisci prenotazioni</a>
+            </li>
+            <li *ngIf="userRole === 'ADMIN'" class="nav-item">
+              <a class="nav-link text-warning fs-5" [routerLink]="['/managePayment']" routerLinkActive="active">Gestisci pagamenti</a>
+            </li>
+            <li *ngIf="userRole === 'ADMIN'" class="nav-item">
+              <a class="nav-link text-warning fs-5" [routerLink]="['/manageUser']" routerLinkActive="active">Gestisci Utenti</a>
+            </li>
           </ul>
         </div>
 
@@ -64,6 +76,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   user$: Observable<any>;
+  userRole: string = '';
   private subscription: Subscription | null = null;
 
   constructor(private authSrv: AuthService) {
@@ -71,7 +84,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
+    this.subscription = this.authSrv.currentUser$.subscribe(user => {
+      if (user && user.role) this.userRole = user.role;
+    });
   }
 
   ngOnDestroy(): void {
@@ -82,8 +97,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   logout() {
     this.authSrv.logout().subscribe(
-      () => window.location.reload(),
+      () => {
+        this.userRole = '';
+      },
       error => console.error('Logout Error:', error)
     );
   }
+
 }

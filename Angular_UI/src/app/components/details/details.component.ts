@@ -104,12 +104,16 @@ export class DetailsComponent implements OnInit {
   deleteCar(): void {
     if (confirm('Sei sicuro di voler cancellare questa auto?')) {
       this.carService.deleteCar(this.car.id).subscribe(
-        () => console.log('Car deleted successfully'),
+        () => {
+          console.log('Car deleted successfully');
+          this.carService.refreshCars();
+          this.router.navigate(['/cars']);
+        },
         error => console.error('Error deleting car', error)
       );
-      this.router.navigate(['/cars']);
     }
   }
+
 
   saveChanges(): void {
     this.carService.updateCar(this.car.id, this.car).subscribe(
