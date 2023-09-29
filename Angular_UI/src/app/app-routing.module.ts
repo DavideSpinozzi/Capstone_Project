@@ -12,6 +12,7 @@ import { CreateCarComponent } from './components/create-car/create-car.component
 import { ManageBookingComponent } from './components/manage-booking/manage-booking.component';
 import { ManageUserComponent } from './components/manage-user/manage-user.component';
 import { ManagePaymentComponent } from './components/manage-payment/manage-payment.component';
+import { AdminGuard } from './auth/admin.guard';
 
 const routes: Routes = [
   {
@@ -47,22 +48,22 @@ const routes: Routes = [
 {
   path: 'createCar',
   component: CreateCarComponent,
-  canActivate: [AuthGuard],
+  canActivate: [AdminGuard],
 },
 {
   path: 'manageBooking',
   component: ManageBookingComponent,
-  canActivate: [AuthGuard],
+  canActivate: [AdminGuard],
 },
 {
   path: 'manageUser',
   component: ManageUserComponent,
-  canActivate: [AuthGuard],
+  canActivate: [AdminGuard],
 },
 {
   path: 'managePayment',
   component: ManagePaymentComponent,
-  canActivate: [AuthGuard],
+  canActivate: [AdminGuard],
 },
 ];
 

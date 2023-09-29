@@ -8,7 +8,9 @@ import { Component, OnInit } from '@angular/core';
         <h1 class="text-center mb-4 text-primary">
           Benvenuto in CarGo!
         </h1>
-<p class="text-center fs-4">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ratione consequatur quos, repudiandae necessitatibus odio dolore temporibus porro impedit, assumenda, voluptas laborum earum blanditiis quod aut fugit ut voluptatibus odit neque?</p>
+<p class="text-center fs-4">CarGo e il vostro compagno di viaggio ideale, creato per trasformare ogni viaggio in un'avventura senza pensieri!
+Che sia per un viaggio di lavoro, una fuga romantica o una vacanza in famiglia, CarGo mette a vostra disposizione un'ampia gamma di auto per soddisfare ogni vostra esigenza!
+</p>
         <div
           id="carouselExampleIndicators"
           class="carousel slide"
@@ -43,17 +45,17 @@ import { Component, OnInit } from '@angular/core';
                 alt="Auto per montagna"
               />
               <div class="carousel-caption d-none d-md-block">
-                <h5>Auto per montagna</h5>
+                <h5>Auto per viaggi in montagna</h5>
                 <p>Veicoli ideali per avventure montane.</p>
               </div>
             </div>
             <div class="carousel-item">
               <img
-                src="https://immagini.alvolante.it/sites/default/files/styles/image_gallery_big/public/dasapere_galleria/2018/10/allagamento-auto_2.jpg?itok=geBqnvVg"
+                src="https://viaggiaredegustando.it/wp-content/uploads/2021/04/Road-trip.jpg"
                 alt="Auto per mare"
               />
               <div class="carousel-caption d-none d-md-block">
-                <h5>Auto per mare</h5>
+                <h5>Auto per viaggi al mare</h5>
                 <p>Perfetto per i tuoi viaggi al mare.</p>
               </div>
             </div>
@@ -63,7 +65,7 @@ import { Component, OnInit } from '@angular/core';
                 alt="Auto per città"
               />
               <div class="carousel-caption d-none d-md-block">
-                <h5>Auto per città</h5>
+                <h5>Auto per la città</h5>
                 <p>Ottimo per girare la città con stile.</p>
               </div>
             </div>

@@ -39,6 +39,10 @@ export class BookingService {
     return this.http.delete(`${this.baseUrl}/admin/${id}`);
   }
 
+  deleteExpiredBooking(): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/deleteExpired`);
+  }
+
   closeBooking(id: string): Observable<any> {
     return this.http.put(`${this.baseUrl}/${id}/close`, {});
   }

@@ -80,6 +80,8 @@ public class BookingService {
 
 
     public List<Booking> getBookings() {
+    	checkAndCancelOverlappingBookings();
+    	deleteExpiredBookings();
         return bookingRepository.findAll();
     }
 
@@ -194,15 +196,20 @@ public class BookingService {
     }
     
     public List<Booking> getOpenBookings() {
+    	checkAndCancelOverlappingBookings();
+    	deleteExpiredBookings();
         return bookingRepository.findByStato(Stato.APERTO);
+        
     }
 
     public List<Booking> getClosedBookings() {
+    	checkAndCancelOverlappingBookings();
+    	deleteExpiredBookings();
         return bookingRepository.findByStato(Stato.CHIUSO);
     }
 
 
-    public boolean isDateOverlap(LocalDate startDate1, LocalDate endDate1, LocalDate startDate2, LocalDate endDate2) {
+    public static boolean isDateOverlap(LocalDate startDate1, LocalDate endDate1, LocalDate startDate2, LocalDate endDate2) {
         if (startDate1 == null || endDate1 == null || startDate2 == null || endDate2 == null)
             throw new IllegalArgumentException("Le date non possono essere nulle");
         
@@ -224,8 +231,38 @@ public class BookingService {
                (endDate2.isEqual(endDate1) || endDate2.isBefore(endDate1)) && endDate2.isAfter(startDate1);
     }
 
+    public void checkAndCancelOverlappingBookings() {
+        List<Booking> openBookings = bookingRepository.findByStato(Stato.APERTO);
+        List<Booking> closedBookings = bookingRepository.findByStato(Stato.CHIUSO);
 
+        for (Booking open : openBookings) {
+            for (Booking closed : closedBookings) {
+                if (open.getCar().getId().equals(closed.getCar().getId())
+                    && isDateOverlap(open.getDataInizio(), open.getDataFine(), closed.getDataInizio(), closed.getDataFine())) {
+                    
+                    open.setUser(null);
+                    open.setCar(null);
+                    bookingRepository.save(open);
+                    bookingRepository.delete(open);
+                }
+            }
+        }
+    }
 
+    public void deleteExpiredBookings() {
+		List<Booking> allBookings = bookingRepository.findAll();
+		System.out.println(allBookings);
+		for (Booking booking : allBookings) {
+			if (booking.getDataFine().isBefore(LocalDate.now()) && booking.getStato().equals(Stato.APERTO)) {
+				System.out.println(booking);
+				Booking bookingDel = bookingRepository.findById(booking.getId())
+						.orElseThrow(() -> new NotFoundException(booking.getId()));
+				bookingRepository.delete(bookingDel);
+
+			}
+		}
+	}
+    
     public Booking save(Booking booking) {
         return bookingRepository.save(booking);
     }

@@ -76,6 +76,12 @@ public class BookingController {
     public void deleteBookingAdmin(@PathVariable UUID id) throws NotFoundException {
         bookingService.deleteBookingAdmin(id);
     }
+    
+    @DeleteMapping("/deleteExpired")
+    public void deleteExpiredBooking() {
+    	bookingService.checkAndCancelOverlappingBookings();
+    	bookingService.deleteExpiredBookings();
+    }
 
     @PutMapping("/{id}/close")
     public ResponseEntity<Booking> closeBooking(@PathVariable UUID id) throws NotFoundException {

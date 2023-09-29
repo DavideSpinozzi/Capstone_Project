@@ -138,8 +138,8 @@ import { CarPayload } from 'src/app/interface/car-payload';
       </div>
       </div>
     </div>
-    <div class="col-0 col-md-2 border carrello" *ngIf="user">
-<div class="border row px-0 py-2"><div class="col-8 d-flex justify-content-center align-items-center px-0"><h2 class="text-center py-1">Carrello</h2></div><div class="col-4 d-flex justify-content-center align-items-center px-0"><button *ngIf="bookings.length > 0" type="button" class="btn btn-success fs-5" [routerLink]="['/checkout']">Acquista</button></div></div>
+    <div class="col-0 col-md-2 border carrello" *ngIf="user && bookings.length > 0">
+<div class="border row px-0 py-2"><div class="col-8 d-flex justify-content-center align-items-center px-0"><h2 class="text-center py-1">Carrello</h2></div><div class="col-4 d-flex justify-content-center align-items-center px-0"><button type="button" class="btn btn-success fs-5" [routerLink]="['/checkout']">Acquista</button></div></div>
 <div *ngIf="bookings.length > 0" class="text-center fs-4 py-1 border-bottom">Costo totale: {{ totalCost }}€</div>
 <div class="d-flex flex-column align-items-center">
  <div class="card my-2" *ngFor="let booking of bookings; let i = index" style="width: 18rem;">
@@ -238,6 +238,14 @@ export class CarsComponent implements OnInit {
       this.cars = cars;
     });
     this.carService.refreshCars();
+    this.bookingService.deleteExpiredBooking().subscribe(
+      response => {
+        console.log('Prenotazioni scadute eliminate:', response);
+      },
+      error => {
+        console.error('Errore nell\'eliminazione delle prenotazioni scadute:', error);
+      }
+    );
     this.loadUserBookings();
   }
 

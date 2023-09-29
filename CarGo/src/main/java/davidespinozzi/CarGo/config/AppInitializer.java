@@ -73,7 +73,7 @@ public class AppInitializer {
 	}
 	
 	private void changeRole() {
-	UUID id = UUID.fromString("6dc889c9-ab9c-4f66-b460-79145a34e9df");
+	UUID id = UUID.fromString("e0eb18d7-7fe6-4321-84d1-0671f5cdf474");
     userService.changeRole(id);
 	}
 	

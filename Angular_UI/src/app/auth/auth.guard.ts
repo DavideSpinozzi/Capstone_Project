@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
                     return true;
                 }
                 alert('Non hai i permessi per visualizzare questo contenuto, effettua il login')
-                return this.router.createUrlTree(['login']);
+                return this.router.createUrlTree(['']);
             })
         );
     }

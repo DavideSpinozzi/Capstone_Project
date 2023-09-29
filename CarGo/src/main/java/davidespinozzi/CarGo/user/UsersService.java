@@ -1,5 +1,6 @@
 package davidespinozzi.CarGo.user;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import davidespinozzi.CarGo.bookings.Booking;
 import davidespinozzi.CarGo.bookings.BookingRepository;
+import davidespinozzi.CarGo.bookings.BookingService;
 import davidespinozzi.CarGo.bookings.Stato;
 import davidespinozzi.CarGo.exceptions.BadRequestException;
 import davidespinozzi.CarGo.exceptions.NotFoundException;
@@ -23,7 +25,7 @@ import davidespinozzi.CarGo.payment.PaymentRepository;
 public class UsersService {
 
 	@Autowired
-    private BookingRepository bookingRepository;
+    BookingRepository bookingRepository;
 	
 	@Autowired
 	UserRepository userRepository;
@@ -124,10 +126,14 @@ public class UsersService {
 	               .filter(booking -> booking.getStato() == state)
 	               .collect(Collectors.toList());
 	}
+
 	
 	public UUID getCurrentUserId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User currentUser = (User) authentication.getPrincipal();
 		return currentUser.getId();
 	}
+	
+	
+
 }
