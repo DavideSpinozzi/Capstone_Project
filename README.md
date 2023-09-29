@@ -16,13 +16,13 @@ L'UI di CarGo è sviluppata con Angular, assicurando un'esperienza utente fluida
 
 CarGo offre 3 modalità di utilizzo:
 
- -Non Loggati 🕵️
+ 1: Non Loggati 🕵️
      Visita il sito e scopri dettagli e prezzi delle automobili disponibili in CarGo, anche senza registrarti!
      
- -User Normale 🛒
+ 2: User Normale 🛒
      Accedi come user normale e avrai la possibilità di aggiungere veicoli al tuo carrello ed acquistare prenotazioni per diverse auto.
      
- -Admin 👩‍💼
+ 3: Admin 👩‍💼
      Crea, modifica o cancella auto.
      Visualizza e modifica tutte le informazioni riguardanti le prenotazioni.
      Gestisce i pagamenti e cambia ruolo agli utenti, con accesso a tutte le funzionalità di un user normale.
