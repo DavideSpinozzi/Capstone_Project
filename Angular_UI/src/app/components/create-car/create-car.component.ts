@@ -8,7 +8,7 @@ import { CarService } from 'src/app/service/car.service';
   template: `
    <div class="container d-flex justify-content-center my-2">
   <form [formGroup]="carForm" (ngSubmit)="onSubmit()" class="bg-white p-5 rounded shadow form-container" novalidate>
-    <h2 class="mb-4 text-primary text-center">Crea Auto</h2>
+    <h2 class="mb-4 text-primary text-center">Crea veicolo</h2>
 
     <div class="mb-3">
       <label for="foto" class="form-label">Foto</label>

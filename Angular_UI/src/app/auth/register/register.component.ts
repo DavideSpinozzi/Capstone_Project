@@ -42,7 +42,7 @@ import { AuthService } from '../auth.service';
   `,
   styles: [
     `#main{
-      height: 60vh;
+      min-height: 60vh;
     }`
   ]
 })

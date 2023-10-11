@@ -25,10 +25,10 @@ import { AuthService } from 'src/app/auth/auth.service';
               <a class="nav-link active text-black fs-5" aria-current="page" [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-black fs-5" [routerLink]="['/cars']" routerLinkActive="active">Auto</a>
+              <a class="nav-link text-black fs-5" [routerLink]="['/cars']" routerLinkActive="active">Veicoli</a>
             </li>
             <li *ngIf="userRole === 'ADMIN'" class="nav-item">
-              <a class="nav-link text-warning fs-5" [routerLink]="['/createCar']" routerLinkActive="active">Aggiungi un auto</a>
+              <a class="nav-link text-warning fs-5" [routerLink]="['/createCar']" routerLinkActive="active">Aggiungi un veicolo</a>
             </li>
             <li *ngIf="userRole === 'ADMIN'" class="nav-item">
               <a class="nav-link text-warning fs-5" [routerLink]="['/manageBooking']" routerLinkActive="active">Gestisci prenotazioni</a>

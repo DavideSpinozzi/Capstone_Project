@@ -187,6 +187,7 @@ export class CheckoutComponent implements OnInit {
         },
         error => {
           console.error('Error creating payment!', error);
+          alert("Pagamento non riuscito")
         }
       );
     }

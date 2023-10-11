@@ -38,7 +38,7 @@ import { Router } from '@angular/router';
   `,
   styles: [
     `#main{
-      height: 60vh;
+      min-height: 60vh;
     }`
   ]
 })

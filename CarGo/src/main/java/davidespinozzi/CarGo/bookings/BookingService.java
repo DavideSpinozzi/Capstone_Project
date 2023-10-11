@@ -37,7 +37,11 @@ public class BookingService {
 
     public Booking createBooking(BookingPayload bookingPayload) throws NotFoundException, NotAvailableException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) throw new IllegalArgumentException("Authentication not found.");
+
         User currentUser = (User) authentication.getPrincipal();
+        if (currentUser == null) throw new IllegalArgumentException("Current user not found.");
+
         UUID carId = bookingPayload.getCarId();
         Cars car = carService.getCarById(carId);
 
@@ -48,19 +52,20 @@ public class BookingService {
 
         if (dataInizio == null || dataFine == null) throw new IllegalArgumentException("Le date non possono essere nulle");
         if (dataInizio.isBefore(LocalDate.now()) || dataFine.isBefore(LocalDate.now())) throw new IllegalArgumentException("Le date non possono essere precedenti alla data corrente");
+        if (dataInizio.isAfter(dataFine)) throw new IllegalArgumentException("Le date non sono state inserite nell'ordine corretto");
         
         List<Booking> overlappingBookingsUser = currentUser.getBookings().stream()
-                .filter(booking -> booking.getCar().getId().equals(carId))
-                .filter(booking -> booking.getStato() == Stato.APERTO)
-                .filter(booking -> isDateOverlap(booking.getDataInizio(), booking.getDataFine(), dataInizio, dataFine))
-                .collect(Collectors.toList());
+            .filter(booking -> booking != null && booking.getStato() == Stato.APERTO)
+            .filter(booking -> booking.getCar() != null && booking.getCar().getId().equals(carId))
+            .filter(booking -> isDateOverlap(booking.getDataInizio(), booking.getDataFine(), dataInizio, dataFine))
+            .collect(Collectors.toList());
 
         if (!overlappingBookingsUser.isEmpty()) throw new NotAvailableException("Date inserite non disponibili per questa auto.");
 
         List<Booking> overlappingBookingsCar = car.getBookings().stream()
-                .filter(booking -> booking.getStato() == Stato.CHIUSO)
-                .filter(booking -> isDateOverlap(booking.getDataInizio(), booking.getDataFine(), dataInizio, dataFine))
-                .collect(Collectors.toList());
+            .filter(booking -> booking != null && booking.getStato() == Stato.CHIUSO)
+            .filter(booking -> isDateOverlap(booking.getDataInizio(), booking.getDataFine(), dataInizio, dataFine))
+            .collect(Collectors.toList());
 
         if (!overlappingBookingsCar.isEmpty()) throw new NotAvailableException("Date prenotate non disponibili per questa auto.");
 
@@ -77,6 +82,7 @@ public class BookingService {
 
         return save(newBooking);
     }
+
 
 
     public List<Booking> getBookings() {
@@ -158,17 +164,23 @@ public class BookingService {
 
     public void deleteBookingAdmin(UUID id) throws NotFoundException {
         Booking booking = findById(id);
-        Cars car = carService.getCarById(booking.getCar().getId());
-        car.getBookings().remove(booking);
-        carService.save(car);
+        if (booking.getCar() != null) {
+            Cars car = carService.getCarById(booking.getCar().getId());
+            if (car != null) {
+                car.getBookings().remove(booking);
+                carService.save(car);
+            }
+        }
         if (booking.getPayment() != null) {
             Payment payment = paymentService.getPaymentById(booking.getPayment().getId());
-            payment.getBookings().remove(booking);
-            paymentService.save(payment);
+            if (payment != null) {
+                payment.getBookings().remove(booking);
+                paymentService.save(payment);
+            }
         }
-        
         bookingRepository.delete(booking);
     }
+
 
     public void findByIdAndDelete(UUID id) {
         Booking booking = findById(id);
@@ -236,7 +248,13 @@ public class BookingService {
         List<Booking> closedBookings = bookingRepository.findByStato(Stato.CHIUSO);
 
         for (Booking open : openBookings) {
+            if (open.getCar() == null) {
+                continue;
+            }
             for (Booking closed : closedBookings) {
+                if (closed.getCar() == null) {
+                    continue;
+                }
                 if (open.getCar().getId().equals(closed.getCar().getId())
                     && isDateOverlap(open.getDataInizio(), open.getDataFine(), closed.getDataInizio(), closed.getDataFine())) {
                     
@@ -248,6 +266,7 @@ public class BookingService {
             }
         }
     }
+
 
     public void deleteExpiredBookings() {
 		List<Booking> allBookings = bookingRepository.findAll();

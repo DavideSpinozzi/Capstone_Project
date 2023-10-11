@@ -45,7 +45,9 @@ import { UserService } from 'src/app/service/user.service';
 </div>
 </div>
           <div *ngIf="openBookings.length > 0" class="m-4 row">
-            <h5 class="text-center">Prenotazioni Aperte:</h5>
+<div class="d-flex justify-content-center align-items-center">
+            <h5>Prenotazioni Aperte:</h5>
+            <button type="button" class="btn btn-success fs-5 ms-3" [routerLink]="['/checkout']">Acquista</button></div>
             <div *ngFor="let booking of openBookings; let i = index" class="col-12 col-md-3 my-2">
               <div class="card">
             <div class="card-header">Nome modello: {{booking.nomeModello}}
@@ -91,7 +93,7 @@ import { UserService } from 'src/app/service/user.service';
 </div>
             </div>
           </div>
-
+<hr>
           <div *ngIf="closedBookings.length > 0" class="m-4 row">
             <h5 class="text-center">Prenotazioni Chiuse:</h5>
             <div *ngFor="let booking of closedBookings" class="col-12 col-md-3 mt-2">

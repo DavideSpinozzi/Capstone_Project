@@ -4,8 +4,8 @@ import { PaymentService } from 'src/app/service/payment.service';
 @Component({
   selector: 'app-manage-payment',
   template: `
-   <div class="m-4 row">
-    <h5 class="text-center">Tutti i pagamenti:</h5>
+   <div id="main" class="m-4 row">
+    <h3 class="text-center">Tutti i pagamenti:</h3>
     <div *ngFor="let payment of payments" class="col-12 col-md-3 mt-2">
         <div class="card">
             <div class="card-header">ID pagamento: {{payment.id}}</div>
@@ -22,6 +22,9 @@ import { PaymentService } from 'src/app/service/payment.service';
     </div>
   `,
   styles: [
+    `#main{
+      min-height: 60vh;
+    }`
   ]
 })
 export class ManagePaymentComponent implements OnInit {

@@ -53,12 +53,16 @@ import { CarService } from 'src/app/service/car.service';
   <div class="container mt-5" *ngIf="!car">
     <div class="row justify-content-center">
       <div class="col-md-6 text-center">
-        <p>Caricamento dettagli auto...</p>
+        <p>Caricamento dettagli veicolo...</p>
       </div>
     </div>
   </div>
   `,
-  styles: []
+  styles: [
+    `.container{
+      min-height: 75vh;
+    }`
+  ]
 })
 export class DetailsComponent implements OnInit {
   car: any = null;

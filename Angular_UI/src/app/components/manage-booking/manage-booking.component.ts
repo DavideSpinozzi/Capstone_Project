@@ -5,6 +5,7 @@ import { BookingService } from 'src/app/service/booking.service';
 @Component({
   selector: 'app-manage-booking',
   template: `
+  <div id="main">
     <div *ngIf="openBookings.length > 0" class="m-4 row">
     <h5 class="text-center">Prenotazioni Aperte:</h5>
     <div *ngFor="let booking of openBookings" class="col-12 col-md-3 my-2">
@@ -75,10 +76,12 @@ import { BookingService } from 'src/app/service/booking.service';
         </div>
     </div>
 </div>
-
+</div>
   `,
   styles: [
-
+    `#main{
+      min-height: 60vh;
+    }`
   ]
 })
 export class ManageBookingComponent implements OnInit {

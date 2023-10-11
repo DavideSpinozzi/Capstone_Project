@@ -5,8 +5,8 @@ import { UserService } from 'src/app/service/user.service';
 @Component({
   selector: 'app-manage-user',
   template: `
-   <div class="m-4 row">
-    <h5 class="text-center">Tutti gli utenti:</h5>
+   <div id="main" class="m-4 row">
+    <h3 class="text-center">Tutti gli utenti:</h3>
     <div *ngFor="let user of users" class="col-12 col-md-3 mt-2">
         <div class="card">
             <div class="card-header">ID utente: {{user.id}}</div>
@@ -25,6 +25,9 @@ import { UserService } from 'src/app/service/user.service';
     </div>
   `,
   styles: [
+    `#main{
+      min-height: 60vh;
+    }`
   ]
 })
 export class ManageUserComponent implements OnInit {
